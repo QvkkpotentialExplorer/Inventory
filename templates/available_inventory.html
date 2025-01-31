@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инвентарь</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css">
+    <style>
+        .inventory-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+{% if current_user.role == "admin" %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark"><a class="navbar-brand"
+                                                            href="{{ url_for('index') }}">Главная</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+            class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Пользователи </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown"><a class="dropdown-item"
+                                                                               href="{{ url_for('admin.users') }}">Список
+                    пользователей</a> <a class="dropdown-item" href="{{ url_for('admin.add_user') }}">Добавить нового
+                    пользователя</a></div>
+            </li>
+            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Инвентарь </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown"><a class="dropdown-item"
+                                                                               href="{{ url_for('inventory.add_new_inventory') }}">Добавить
+                    новый инвентарь</a> <a class="dropdown-item"
+                                           href="{{ url_for('inventory.add_new_inventory_type') }}">Добавить новый тип
+                    инвентаря</a> <a class="dropdown-item" href="{{ url_for('inventory.available_inventory') }}">Список
+                    доступного инвентаря</a></div>
+            </li>
+            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Закупки </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown"><a class="dropdown-item"
+                                                                               href="{{ url_for('purchase.add_procurement_plan') }}">Добавить
+                    план закупок</a> <a class="dropdown-item" href="{{ url_for('purchase.view_procurement_plans') }}">Список
+                    планов закупок</a> <a class="dropdown-item"
+                                          href="{{ url_for('purchase.import_procurement_data') }}">Импорт данных о
+                    закупках</a></div>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_reports') }}">Список отчетов об
+                инвентаре</a></li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth_page.logout') }}">Выход</a></li>
+        </ul>
+    </div>
+</nav>
+{% else %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark"><a class="navbar-brand"
+                                                            href="{{ url_for('index') }}">Главная</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+            class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.request_inventory') }}">Создать
+                заявку на инвентарь</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_requests') }}">Список заявок на
+                инвентарь</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.available_inventory') }}">Список
+                доступного инвентаря</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.repairs') }}">Список заявок на ремонт
+                инвентаря</a></li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('profile_page.user') }}">Профиль пользователя</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth_page.logout') }}">Выход</a></li>
+        </ul>
+    </div>
+</nav>
+{% endif %}
+
+
+<div class="container">
+    <h2 class="text-center">Инвентарь</h2>
+    <div class="inventory-cards">
+        {% for item in items %}
+        <div class="card">
+            <h3>{{ item.name }}</h3>
+            <p>Состояние: {{ item.status }}</p>
+            {% if current_user.role == 'admin' %}
+            <p>Закреплён за: {{ item.username if item.user_id else "Не закреплён" }}</p>
+
+            <!-- Форма для изменения статуса инвентаря -->
+            <form method="POST" action="{{ url_for('inventory.update_inventory_status', inventory_id=item.id) }}">
+                <select name="status" required>
+                    <option value="new" {% if item.status==
+                    'new' %}selected{% endif %}>Новое</option>
+                    <option value="used" {% if item.status==
+                    'used' %}selected{% endif %}>Использованное</option>
+                    <option value="in_use" {% if item.status==
+                    'in_use' %}selected{% endif %}>В использовании</option>
+                    <option value="broken" {% if item.status==
+                    'broken' %}selected{% endif %}>Сломанное</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Обновить статус</button>
+            </form>
+
+            <!-- Если статус 'broken', показываем кнопку для подачи заявки на ремонт -->
+            {% if current_user.role == 'admin' %}
+            <p>Закреплён за: {{ item.username if item.user_id else "Не закреплён" }}</p>
+            <form method="POST" action="{{ url_for('inventory.update_inventory_user', inventory_id=item.id) }}">
+                <select name="user_id" required>
+                    <option value="">Не закреплён</option>
+                    {% for user in users %}
+                    <option value="{{ user.id }}" {% if user.id == item.user_id %}selected{% endif %}>{{ user.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">Обновить пользователя</button>
+            </form>
+            {% endif %}
+
+            {% if item.status == 'broken' %}
+            <a href="{{ url_for('inventory.create_repair_request', inventory_id=item.id) }}" class="btn btn-secondary">Подать
+                заявку на ремонт</a>
+            {% endif %}
+
+            <!-- Кнопка для создания отчета по инвентарю -->
+            <a href="{{ url_for('application.add_report', inventory_id=item.id) }}" class="btn btn-success">Составить
+                отчёт</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<script>
+    // Функция для скрытия всех флеш-сообщений через 10 секунд
+    setTimeout(function() {
+        var flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(function(message) {
+            message.style.display = 'none';
+        });
+    }, 10000);  // 10000 миллисекунд = 10 секунд
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

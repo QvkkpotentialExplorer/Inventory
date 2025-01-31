@@ -29,3 +29,93 @@ def create_admin(name, password):
     db_sess.close()
 
     return 'Вы зареганы'
+
+@admin.route('/users')
+@login_required
+def users():
+    if current_user.role != 'admin':
+        flash('У вас нет доступа для выполнения этого действия.', 'error')
+        return redirect(url_for('inventory.available_inventory'))
+
+    users = db_sess.query(User).all()
+    return render_template('users.html', users=users)
+
+
+@admin.route('/add_user', methods=['GET', 'POST'])
+@login_required
+def add_user():
+    if current_user.role != 'admin':
+        flash('У вас нет доступа для выполнения этого действия.', 'error')
+        return redirect(url_for('inventory.available_inventory'))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        role = request.form.get('role')
+        full_name = request.form.get('full_name')
+        email = request.form.get('email')
+
+        if username and password and role:
+            user = User(username=username, role=role, full_name=full_name, email=email)
+            user.set_password(password)
+            db_sess.add(user)
+            db_sess.commit()
+            flash('Пользователь добавлен успешно!', 'success')
+            return redirect(url_for('admin.users'))
+        else:
+            flash('Пожалуйста, заполните все поля.', 'error')
+
+    return render_template('add_user.html')
+
+@admin.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def edit_user(user_id):
+    if current_user.role != 'admin':
+        flash('У вас нет доступа для выполнения этого действия.', 'error')
+        return redirect(url_for('inventory.available_inventory'))
+
+    user = db_sess.query(User).get(user_id)
+    if not user:
+        flash('Пользователь не найден.', 'error')
+        return redirect(url_for('admin.users'))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        role = request.form.get('role')
+        full_name = request.form.get('full_name')
+        email = request.form.get('email')
+
+        if username:
+            user.username = username
+        if password:
+            user.set_password(password)
+        if role:
+            user.role = role
+        if full_name:
+            user.full_name = full_name
+        if email:
+            user.email = email
+
+        db_sess.commit()
+        flash('Пользователь изменен успешно!', 'success')
+        return redirect(url_for('admin.users'))
+
+    return render_template('edit_user.html', user=user)
+
+@admin.route('/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    if current_user.role != 'admin':
+        flash('У вас нет доступа для выполнения этого действия.', 'error')
+        return redirect(url_for('inventory.available_inventory'))
+
+    user = db_sess.query(User).get(user_id)
+    if not user:
+        flash('Пользователь не найден.', 'error')
+        return redirect(url_for('admin.users'))
+
+    db_sess.delete(user)
+    db_sess.commit()
+    flash('Пользователь удален успешно!', 'success')
+    return redirect(url_for('admin.users'))

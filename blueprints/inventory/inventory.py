@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 import os
+
+from data.user import User
 from form.inventory_repair_form import InventoryRepairForm
 from data import db_session
 from data.db_session import db_sess
@@ -55,7 +57,8 @@ def add_new_inventory_type():
 @login_required
 def available_inventory():
     items = db_sess.query(Inventory).all()
-    return render_template('available_inventory.html', items=items)
+    users = db_sess.query(User).all()
+    return render_template('available_inventory.html', users = users, items = items)
 
 
 @inventory.route('/<int:inventory_id>/update_status', methods=['POST'])
@@ -71,7 +74,7 @@ def update_inventory_status(inventory_id):
         return redirect(url_for('inventory.available_inventory'))
 
     new_status = request.form.get('status')
-    if new_status in ['used', 'in_use']:
+    if new_status in ['used', 'in_use', 'broken']:
         inventory_item.status = new_status
         if new_status == 'used':
             inventory_item.user_id = None
@@ -142,3 +145,30 @@ def repairs():
 
     user_repairs = db_sess.query(InventoryRepair).filter_by(user_id=current_user.id).all()
     return render_template('repairs.html', repair_requests=user_repairs)
+
+
+@inventory.route('/<int:inventory_id>/update_user', methods=['POST'])
+@login_required
+def update_inventory_user(inventory_id):
+    if current_user.role != 'admin':
+        flash('У вас нет доступа для выполнения этого действия.', 'error')
+        return redirect(url_for('inventory.available_inventory'))
+
+    inventory_item = db_sess.query(Inventory).get(inventory_id)
+    if not inventory_item:
+        flash('Инвентарь не найден.', 'error')
+        return redirect(url_for('inventory.available_inventory'))
+
+    new_user_id = request.form.get('user_id')
+    if new_user_id:
+        user = db_sess.query(User).get(new_user_id)
+        if user:
+            inventory_item.user_id = new_user_id
+            inventory_item.username = user.username
+            db_sess.commit()
+            flash(f'Пользователь инвентаря "{inventory_item.name}" обновлён.', 'success')
+        else:
+            flash('Пользователь не найден.', 'error')
+    else:
+        flash('Некорректный пользователь.', 'error')
+    return redirect(url_for('inventory.available_inventory'))

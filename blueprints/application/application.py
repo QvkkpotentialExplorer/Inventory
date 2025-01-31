@@ -4,6 +4,7 @@ from data import db_session
 from data.db_session import db_sess
 from data.inventory import Inventory
 from data.inventory_report import InventoryReport
+from data.inventory_type import InventoryType
 from data.user import User
 from form.inventory_report_form import InventoryReportForm
 from form.inventory_request_form import InventoryRequestForm
@@ -19,7 +20,7 @@ def request_inventory():
     if form.validate_on_submit():
         request_item = InventoryRequest(
             user_id=current_user.id,
-            inventory_id=form.inventory_id.data,
+            inventory_type_id=form.inventory_type_id.data,
             count=form.count.data,
             status='pending'
         )
@@ -33,7 +34,7 @@ def request_inventory():
 @application.route('/requests/<int:request_id>/update', methods=['POST'])
 @login_required
 def update_request_status(request_id):
-    global inventory_item
+    global inventory_type_item
     if current_user.role != 'admin':
         flash('У вас нет доступа для выполнения этого действия.', 'error')
         return redirect(url_for('application.view_requests'))
@@ -48,19 +49,29 @@ def update_request_status(request_id):
         request_item.status = new_status
 
         if new_status == 'approved':
-            inventory_item = db_sess.query(Inventory).get(request_item.inventory_id)
+            inventory_type_item = db_sess.query(InventoryType).get(request_item.inventory_type_id)
+            inventory_items = db_sess.query(Inventory).filter(
+                Inventory.inventory_type_id == request_item.inventory_type_id,
+                (Inventory.user_id == None) | (Inventory.user_id == ""),
+                (Inventory.username == None) | (Inventory.username == "")
+            ).all()
             user_item = db_sess.query(User).get(request_item.user_id)
-            if inventory_item:
-                inventory_item.user_id = request_item.user_id
-                inventory_item.username = user_item.username
-                db_sess.commit()
+            count_item = request_item.count
+
+            if count_item <= len(inventory_items):
+                for i in range(count_item):
+                    inventory_items[i].user_id = user_item.id
+                    inventory_items[i].username = user_item.username
+                    inventory_items[i].status = 'in_use'
+            else:
+                flash("Не достаточно инвентаря", "error")
 
         db_sess.commit()
         flash(f'Статус заявки обновлён на "{new_status}".', 'success')
 
         # Уведомляем пользователя о статусе
         user = db_sess.query(User).get(request_item.user_id)
-        flash(f'Вашу заявку на инвентарь "{inventory_item.name}" обновили до статуса "{new_status}".', 'info')
+        flash(f'Вашу заявку на инвентарь "{inventory_type_item.name}" обновили до статуса "{new_status}".', 'info')
 
     else:
         flash('Некорректный статус.', 'error')

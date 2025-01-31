@@ -1,0 +1,58 @@
+<!doctype html>
+<html data-bs-theme="light" lang="en" style>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    !--    <meta charset="utf-8">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='styles/style.css') }}">
+    <title>Bootstrap Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Inventory CRM</title>
+</head>
+
+<body>
+    <section class="d-xl-flex justify-content-xl-center align-items-xl-center position-relative py-4 py-xl-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2>Вход</h2>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card mb-5">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4"><svg class="bi bi-person" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664z"></path>
+                                </svg></div>
+
+                            <form class="text-center" method="post">
+                                  {{ form.hidden_tag() }}
+                                {% for error in form.errors %}
+                                {% if error%}
+                                <div class="alert alert-danger" role="alert">
+                                    {{form.errors[error][0]}}
+                                </div>
+                                {%endif%}
+                                {% endfor %}
+                                <div class="mb-3">{{ form.username(class = "form-control", placeholder = "Имя") }}</div>
+                                <div class="mb-3"> {{ form.password(class = "form-control", placeholder = "Пароль") }}</div>
+                                <div class="mb-3">{{form.submit(class = "btn btn-primary d-block w-100")}} </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

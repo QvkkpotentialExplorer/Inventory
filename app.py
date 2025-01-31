@@ -9,7 +9,7 @@ from blueprints.purchase.purchase import purchase
 from blueprints.application.application import application
 from data import db_session
 from data.db_session import create_engine_and_session
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from data.user import User
 # from form.inventory_report_form import AddReportForm
 from data.inventory_report import InventoryReport
@@ -36,6 +36,8 @@ app.register_blueprint(purchase)
 app.register_blueprint(application)
 @app.route('/')
 def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('profile_page.user'))
     return render_template('main.html')
 
 

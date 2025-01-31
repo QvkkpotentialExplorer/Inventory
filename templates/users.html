@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пользователи</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css">
+</head>
+<body>
+{% if current_user.role == "admin" %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark"><a class="navbar-brand"
+                                                            href="{{ url_for('index') }}">Главная</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+            class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Пользователи </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown"><a class="dropdown-item"
+                                                                               href="{{ url_for('admin.users') }}">Список
+                    пользователей</a> <a class="dropdown-item" href="{{ url_for('admin.add_user') }}">Добавить нового
+                    пользователя</a></div>
+            </li>
+            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Инвентарь </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown"><a class="dropdown-item"
+                                                                               href="{{ url_for('inventory.add_new_inventory') }}">Добавить
+                    новый инвентарь</a> <a class="dropdown-item"
+                                           href="{{ url_for('inventory.add_new_inventory_type') }}">Добавить новый тип
+                    инвентаря</a> <a class="dropdown-item" href="{{ url_for('inventory.available_inventory') }}">Список
+                    доступного инвентаря</a></div>
+            </li>
+            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Закупки </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown"><a class="dropdown-item"
+                                                                               href="{{ url_for('purchase.add_procurement_plan') }}">Добавить
+                    план закупок</a> <a class="dropdown-item" href="{{ url_for('purchase.view_procurement_plans') }}">Список
+                    планов закупок</a> <a class="dropdown-item"
+                                          href="{{ url_for('purchase.import_procurement_data') }}">Импорт данных о
+                    закупках</a></div>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_reports') }}">Список отчетов об
+                инвентаре</a></li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth_page.logout') }}">Выход</a></li>
+        </ul>
+    </div>
+</nav>
+{% else %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark"><a class="navbar-brand"
+                                                            href="{{ url_for('index') }}">Главная</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+            class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.request_inventory') }}">Создать
+                заявку на инвентарь</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_requests') }}">Список заявок на
+                инвентарь</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.available_inventory') }}">Список
+                доступного инвентаря</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.repairs') }}">Список заявок на ремонт
+                инвентаря</a></li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('profile_page.user') }}">Профиль пользователя</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth_page.logout') }}">Выход</a></li>
+        </ul>
+    </div>
+</nav>
+{% endif %}
+    <div class="container">
+        <h2 class="text-center mt-5">Пользователи</h2>
+        <table class="table table-striped table-bordered mt-5">
+            <thead>
+                <tr>
+                    <th>ИД</th>
+                    <th>Логин</th>
+                    <th>Роль</th>
+                    <th>Полное имя</th>
+                    <th>Email</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>{{ user.full_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-primary btn-sm">Изменить</a>
+                            <a href="{{ url_for('admin.delete_user', user_id=user.id) }}" class="btn btn-danger btn-sm">Удалить</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('admin.add_user') }}" class="btn btn-success btn-lg mt-5">Добавить пользователя</a>
+    </div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<script>
+    // Функция для скрытия всех флеш-сообщений через 10 секунд
+    setTimeout(function() {
+        var flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(function(message) {
+            message.style.display = 'none';
+        });
+    }, 10000);  // 10000 миллисекунд = 10 секунд
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
