@@ -124,6 +124,8 @@ def create_repair_request(inventory_id):
         db_sess.commit()
         flash('Заявка на ремонт инвентаря успешно создана!', 'success')
         return redirect(url_for('inventory.available_inventory'))
+    else:
+        print("Ошибки формы:", form.errors)  # Показывает, если валидация не проходит
 
     return render_template('create_repair_request.html', form=form)
 
