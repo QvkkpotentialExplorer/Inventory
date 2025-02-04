@@ -7,35 +7,41 @@
 </head>
 <body>
 {% include 'nav.html' %}
-<p>Страница создания инвентаря</p>
-    <form method="post">
+ <section class="position-relative py-4 py-xl-5">
+        <div class="container position-relative">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="font-weight-bold">Добавление инвентаря</h2>
+                    <p class="w-lg-50"></p>яф
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <h3>Создание</h3>
+                            <form method="post">
+                                 {{ form.hidden_tag() }}
+                                 {% for error in form.errors %}
+                                {% if error%}
+                                <div class="alert alert-danger" role="alert">
+                                    <!--                                Обращаемся к ошибкам form(RegisterForm), достаем по ключу ошибки(название колонки) первый элемент, то есть наше сообщение-->
+                                    {{form.errors[error][0]}}
+                                </div>
+                                {%endif%}
+                                {% endfor %}
+                                {{ form.inventory_type(class = "form-control mb-3") }}
+                                {{ form.count(class = "form-control mb-3", placeholder = "Количество") }}
+                                {{form.submit(class = "btn btn-dark d-block w-100")}}
+                                <p>Нет нужного вам типа? <a href = '/inventory/create/type'>Создайте!</a></p>
 
-    {{ form.hidden_tag() }}
-        <h2 class="fw-bold mb-2 text-uppercase">Регистрация</h2>
-        {% for error in form.errors %}
-        {% if error%}
-        <div class="alert alert-danger" role="alert">
-            <!--                                Обращаемся к ошибкам form(RegisterForm), достаем по ключу ошибки(название колонки) первый элемент, то есть наше сообщение-->
-            {{form.errors[error][0]}}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        {%endif%}
-        {% endfor %}
-         {{form.inventory_type.label(class = "form-label")}}
-         {{ form.inventory_type(class = "form-control form-control-lg") }}
-         {{form.count.label(class = "form-label")}}
-         {{ form.count(class = "form-control form-control-lg") }}
-         {{form.submit(class = "btn btn-outline-light btn-lg px-5")}}
-        <p>Нет нужного вам типа? <a href = '/inventory/create/type'>Создайте!</a></p>
-    </form>
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul class="flashes">
-            {% for category, message in messages %}
-                <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
+    </section><!-- End: Login Form Basic -->
 
 <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд

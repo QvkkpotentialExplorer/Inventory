@@ -8,32 +8,36 @@
 </head>
 <body>
 {% include 'nav.html' %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Создание заявки на инвентарь</h1>
-        <form method="POST" action="">
-            {{ form.hidden_tag() }}
-
-            <div class="form-group">
-                <label for="inventory_type_id">Идентификатор инвентаря</label>
-                {{ form.inventory_type_id(class="form-control", id="inventory_type_id") }}
-                {% if form.inventory_type_id.errors %}
-                    <small class="text-danger">{{ form.inventory_type_id.errors[0] }}</small>
-                {% endif %}
+ <section class="position-relative py-4 py-xl-5">
+        <div class="container position-relative">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="font-weight-bold">Создание заявки на инвентарь</h2>
+                    <p class="w-lg-50"></p>
+                </div>
             </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <h3>Создание</h3>
+                            <form method="post">
+                                {{ form.hidden_tag() }}
+                                 {% if form.inventory_type_id.errors %}
+                                <small class="text-danger">{{ form.inventory_type_id.errors[0] }}</small>
+                                {% endif %}
+                                 {{ form.inventory_type_id(class="form-control mb-3") }}
+                                 {{ form.count(class="form-control mb-3", id="count") }}
+                                 {{ form.submit(class="btn btn-dark d-block w-100 mb-3", id="0") }}
+                                 <a href="{{ url_for('inventory.available_inventory') }}" class="btn btn-dark d-block w-100 ">Отмена</a>
 
-            <div class="form-group">
-                <label for="count">Количество</label>
-                {{ form.count(class="form-control", id="count") }}
-                {% if form.count.errors %}
-                    <small class="text-danger">{{ form.count.errors[0] }}</small>
-                {% endif %}
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <button type="submit" class="btn btn-primary">Отправить заявку</button>
-            <a href="{{ url_for('inventory.available_inventory') }}" class="btn btn-secondary">Отмена</a>
-        </form>
-    </div>
-{% with messages = get_flashed_messages(with_categories=true) %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">
             {% for category, message in messages %}
@@ -42,6 +46,10 @@
         </ul>
     {% endif %}
 {% endwith %}
+        </div>
+    </section><!-- End: Login Form Basic -->
+
+
 
 <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд

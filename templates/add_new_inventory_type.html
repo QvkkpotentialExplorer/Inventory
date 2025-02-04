@@ -8,26 +8,42 @@
 </head>
 <body>
 {% include 'nav.html' %}
- <form method="post">
+<section class="position-relative py-4 py-xl-5">
+        <div class="container position-relative">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="font-weight-bold">Создание типа инвентаря</h2>
+                    <p class="w-lg-50"></p>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <h3 >Создание</h3>
+                            <form method="post">
+                                 {{ form.hidden_tag() }}
+                                 {% for error in form.errors %}
+                                {% if error%}
+                                <div class="alert alert-danger" role="alert">
+                                    <!--                                Обращаемся к ошибкам form(RegisterForm), достаем по ключу ошибки(название колонки) первый элемент, то есть наше сообщение-->
+                                    {{form.errors[error][0]}}
+                                </div>
+                                {%endif%}
+                                {% endfor %}
+                                {{ form.name(class = "form-control mb-3", placeholder="Название") }}
+                                {{ form.description(class = "form-control mb-3", placeholder = "Описание") }}
+                                {{form.submit(class = "btn btn-dark d-block w-100")}}
 
-    {{ form.hidden_tag() }}
-        <h2 class="fw-bold mb-2 text-uppercase">Регистрация</h2>
-        {% for error in form.errors %}
-        {% if error%}
-        <div class="alert alert-danger" role="alert">
-            <!--                                Обращаемся к ошибкам form(RegisterForm), достаем по ключу ошибки(название колонки) первый элемент, то есть наше сообщение-->
-            {{form.errors[error][0]}}
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        {%endif%}
+    </section><!-- End: Login Form Basic -->
 
-        {% endfor %}
-         {{form.name.label(class = "form-label")}}
-         {{ form.name(class = "form-control form-control-lg") }}
-         {{form.description.label(class = "form-label")}}
-         {{ form.description(class = "form-control form-control-lg") }}
-
-         {{form.submit(class = "btn btn-outline-light btn-lg px-5")}}
-    </form>
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">

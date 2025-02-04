@@ -58,5 +58,5 @@ def load_user(user_id):
 #         return render_template('admin.html')
 #     return render_template('add_report.html', title='Добавление отчета', form=form)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()

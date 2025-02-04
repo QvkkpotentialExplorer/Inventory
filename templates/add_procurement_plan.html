@@ -8,16 +8,38 @@
 </head>
 <body>
 {% include 'nav.html' %}
-<h2>Добавить в план закупок</h2>
-<form method="post">
-    {{ form.hidden_tag() }}
-    <p>{{ form.inventory_type.label }} {{ form.inventory_type() }}</p>
-    <p>{{ form.quantity.label }} {{ form.quantity() }}</p>
-    <p>{{ form.price.label }} {{ form.price() }}</p>
-    <p>{{ form.supplier.label }} {{ form.supplier() }}</p>
-    <p>{{ form.planned_date.label }} {{ form.planned_date() }}</p>
-    <p>{{ form.submit() }}</p>
-</form>
+
+<section class="position-relative py-4 py-xl-5">
+        <div class="container position-relative">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="font-weight-bold">План закупки</h2>
+                    <p class="w-lg-50"></p>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <h3>Создание</h3>
+                            <form method="post">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3"></div>
+                                {{form.inventory_type(class = "form-control mb-3")}}
+                                {{form.quantity(class = "form-control mb-3", placeholder="Количество")}}
+                                {{ form.price(class="form-control mb-3", placeholder="Цена") }}
+
+                                {{ form.supplier(class="form-control mb-3", type="number", placeholder="URL поставщика") }}
+                                {{ form.planned_date(class="form-control pb-1 mb-3", type="date") }}
+                                {{ form.submit(class = " btn btn-dark d-block w-100") }}
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- End: Login Form Basic -->
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">
