@@ -40,53 +40,57 @@
     <h2 class="text-center">Инвентарь</h2>
     <div class="inventory-cards">
         {% for item in items %}
-        <div class="card">
-            <h3>{{ item.name }}</h3>
-            <p>Состояние: {{ item.status }}</p>
-            {% if current_user.role == 'admin' %}
-            <p>Закреплён за: {{ item.username if item.user_id else "Не закреплён" }}</p>
 
-            <!-- Форма для изменения статуса инвентаря -->
-            <form method="POST" action="{{ url_for('inventory.update_inventory_status', inventory_id=item.id) }}">
-                <select name="status" required>
-                    <option value="new" {% if item.status==
-                    'new' %}selected{% endif %}>Новое</option>
-                    <option value="used" {% if item.status==
-                    'used' %}selected{% endif %}>Использованное</option>
-                    <option value="in_use" {% if item.status==
-                    'in_use' %}selected{% endif %}>В использовании</option>
-                    <option value="broken" {% if item.status==
-                    'broken' %}selected{% endif %}>Сломанное</option>
-                </select>
-                <button type="submit" class="btn btn-primary">Обновить статус</button>
-            </form>
+            <div class="card">
+                 <h4 class="card-title">Номер: {{item.id}}</h4>
+                <p>Состояние: {{ item[0].status }}</p>
+                <p>Тип инвентаря: {{item[1]}}</p>
+                {% if current_user.role == 'admin' %}
 
-            <!-- Если статус 'broken', показываем кнопку для подачи заявки на ремонт -->
-            {% if current_user.role == 'admin' %}
-            <p>Закреплён за: {{ item.username if item.user_id else "Не закреплён" }}</p>
-            <form method="POST" action="{{ url_for('inventory.update_inventory_user', inventory_id=item.id) }}">
-                <select name="user_id" required>
-                    <option value="">Не закреплён</option>
-                    {% for user in users %}
-                    <option value="{{ user.id }}" {% if user.id == item.user_id %}selected{% endif %}>{{ user.username }}
-                    </option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-primary">Обновить пользователя</button>
-            </form>
-            {% endif %}
+                <p>Закреплён за: {{ item[2] if item.user_id else "Не закреплён" }}</p>
 
-            {% if item.status == 'broken' %}
-            <a href="{{ url_for('inventory.create_repair_request', inventory_id=item.id) }}" class="btn btn-secondary">Подать
-                заявку на ремонт</a>
-            {% endif %}
+                <!-- Форма для изменения статуса инвентаря -->
+                <form method="POST" action="{{ url_for('inventory.update_inventory_status', inventory_id=item[0].id) }}">
+                    <select name="status" required>
+                        {{item[0].status}}
+                        <option value="new" {% if item[0].status==
+                        'new' %}selected{% endif %}>Новое</option>
+                        <option value="used" {% if item[0].status==
+                        'used' %}selected{% endif %}>Использованное</option>
+                        <option value="in_use" {% if item[0].status==
+                        'in_use' %}selected{% endif %}>В использовании</option>
+                        <option value="broken" {% if item[0].status==
+                        'broken' %}selected{% endif %}>Сломанное</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Обновить статус</button>
+                </form>
 
-            <!-- Кнопка для создания отчета по инвентарю -->
-            <a href="{{ url_for('application.add_report', inventory_id=item.id) }}" class="btn btn-success">Составить
-                отчёт</a>
-            {% endif %}
-        </div>
-        {% endfor %}
+                <!-- Если статус 'broken', показываем кнопку для подачи заявки на ремонт -->
+                <p>Закреплён за: {{ item.username if item.user_id else "Не закреплён" }}</p>
+                <form method="POST" action="{{ url_for('inventory.update_inventory_user', inventory_id=item[0].id) }}">
+                    <select name="user_id" required>
+                        <option value="">Не закреплён</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}" {% if user.id == item.user_id %}selected{% endif %}>{{ user.username }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">Обновить пользователя</button>
+                </form>
+                {% endif %}
+
+                {% if item.status == 'broken'%}
+                <a href="{{ url_for('inventory.create_repair_request', inventory_id=item[0].id) }}" class="btn btn-secondary">Подать
+                    заявку на ремонт</a>
+                {% endif %}
+
+                <!-- Кнопка для создания отчета по инвентарю -->
+                <a href="{{ url_for('application.add_report', inventory_id=item[0].id) }}" class="btn btn-success">Составить
+                    отчёт</a>
+
+            </div>
+            {% endfor %}
+    </div>
     </div>
 </div>
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -98,6 +102,9 @@
         </ul>
     {% endif %}
 {% endwith %}
+
+
+
 
 <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд

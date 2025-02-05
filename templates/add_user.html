@@ -8,35 +8,42 @@
 </head>
 <body>
 {% include 'nav.html' %}
-    <div class="container">
-        <h2 class="text-center mt-5">Добавить пользователя</h2>
-        <form method="POST">
-            <div class="mb-3">
-                <label for="username" class="form-label">Логин</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+  <!-- Start: Login Form Basic -->
+    <section class="position-relative py-4 py-xl-5">
+        <div class="container position-relative">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="font-weight-bold">Создание пользователя</h2>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Пароль</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <h3>Создание</h3>
+                            <form method="post">
+                                {{ form.hidden_tag() }}
+                                 {% for error in form.errors %}
+                                {% if error%}
+                                <div class="alert alert-danger" role="alert">
+                                    <!--                                Обращаемся к ошибкам form(RegisterForm), достаем по ключу ошибки(название колонки) первый элемент, то есть наше сообщение-->
+                                    {{form.errors[error][0]}}
+                                </div>
+                                {%endif%}
+                                {% endfor %}
+                                {{form.username(class = "form-control mb-3", placeholder="Логин")}}
+                                {{form.password(class="form-control mb-3",  placeholder="Пароль")}}
+                                {{form.role(class = "form-control pb-1 mb-3")}}
+                                {{form.fullname(class="form-control mb-3", type="text" , placeholder="Полное имя")}}
+                                {{form.submit(class="btn btn-dark", style="height: 100%;width: 100%;" )}}
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="role" class="form-label">Роль</label>
-                <select class="form-select" id="role" name="role" required>
-                    <option value="admin">Администратор</option>
-                    <option value="user">Пользователь</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="full_name" class="form-label">Полное имя</label>
-                <input type="text" class="form-control" id="full_name" name="full_name">
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email">
-            </div>
-            <button type="submit" class="btn btn-primary">Добавить</button>
-        </form>
-    </div>
+        </div>
+    </section><!-- End: Login Form Basic -->
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">

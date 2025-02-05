@@ -26,8 +26,11 @@ inventory = Blueprint('inventory', __name__, url_prefix='/inventory/', template_
 def add_new_inventory():
     if current_user.role == 'admin':
         form = AddInventoryForm()
+        form.inventory_type.choices= form.get_inventory_type()
         if form.validate_on_submit():
+            print(form.inventory_type.data)
             inventory_type = db_sess.query(InventoryType).filter(InventoryType.name==form.inventory_type.data).first()
+            print(inventory_type.id)
             for i in range(form.count.data):
                 new_inventory = Inventory(inventory_type_id = inventory_type.id)
                 new_inventory.name = f'{inventory_type.name}{new_inventory.id}'
@@ -56,8 +59,21 @@ def add_new_inventory_type():
 @inventory.route('/available')
 @login_required
 def available_inventory():
-    items = db_sess.query(Inventory).all()
-    users = db_sess.query(User).all()
+
+    if current_user.role == 'admin':
+        items = (
+            db_sess.query(Inventory, InventoryType.name, User.username)
+            .join(InventoryType, Inventory.inventory_type_id == InventoryType.id)
+            .outerjoin(User, Inventory.user_id == User.id)  # LEFT JOIN с User
+            .all()
+
+        )
+        users = db_sess.query(User).all()
+        print(items)
+    else:
+        items = db_sess.query(Inventory,InventoryType.name).join(InventoryType, Inventory.inventory_type_id == InventoryType.id).filter(Inventory.user_id == current_user.id).all()
+        users =[]
+        users =[]
     return render_template('available_inventory.html', users = users, items = items)
 
 
@@ -174,3 +190,4 @@ def update_inventory_user(inventory_id):
     else:
         flash('Некорректный пользователь.', 'error')
     return redirect(url_for('inventory.available_inventory'))
+

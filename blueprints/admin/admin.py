@@ -5,6 +5,7 @@ from data.db_session import create_engine_and_session, db_sess
 from data.inventory_type import InventoryType
 from data.procrument_plan import ProcurementPlan
 from data.user import User
+from form.add_user_form import AddUserForm
 from form.procurement_plan_form import ProcurementPlanForm
 
 admin = Blueprint('admin', __name__, url_prefix='/admin/', template_folder='../templates')
@@ -47,25 +48,22 @@ def add_user():
     if current_user.role != 'admin':
         flash('У вас нет доступа для выполнения этого действия.', 'error')
         return redirect(url_for('inventory.available_inventory'))
+    form = AddUserForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        role = form.role.data
+        full_name = form.fullname.data
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        role = request.form.get('role')
-        full_name = request.form.get('full_name')
-        email = request.form.get('email')
 
-        if username and password and role:
-            user = User(username=username, role=role, full_name=full_name, email=email)
-            user.set_password(password)
-            db_sess.add(user)
-            db_sess.commit()
-            flash('Пользователь добавлен успешно!', 'success')
-            return redirect(url_for('admin.users'))
-        else:
-            flash('Пожалуйста, заполните все поля.', 'error')
+        user = User(username=username, role=role, full_name=full_name)
+        user.set_password(password)
+        db_sess.add(user)
+        db_sess.commit()
+        flash('Пользователь добавлен успешно!', 'success')
+        return redirect(url_for('admin.users'))
 
-    return render_template('add_user.html')
+    return render_template('add_user.html', form = form)
 
 @admin.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required

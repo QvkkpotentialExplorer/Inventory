@@ -86,7 +86,16 @@ def view_requests():
     if current_user.role == 'admin':
         requests = db_sess.query(InventoryRequest).all()
     else:
-        requests = db_sess.query(InventoryRequest).filter_by(user_id=current_user.id).all()
+        requests = (
+            db_sess.query(InventoryRequest, User.username, InventoryType.name)
+            .join(User, InventoryRequest.user_id == User.id)  # Join InventoryRequest with User
+            .join(InventoryType,
+                  InventoryRequest.inventory_type_id == InventoryType.id)  # Join InventoryRequest with InventoryType
+            .filter(InventoryRequest.user_id == current_user.id)  # Filter requests for the current user
+            .all()
+        )
+
+        print(requests)
     return render_template('view_requests.html', requests=requests)
 
 
@@ -125,3 +134,8 @@ def add_report(inventory_id):
         return redirect(url_for('application.view_reports'))
     return render_template('add_report.html', form=form)
 
+
+@application.route('/approve/')
+@login_required
+def approve_inventory_request():
+    return redirect(url_for('application.view_requests'))

@@ -8,29 +8,10 @@
 </head>
 <body>
 {% include 'nav.html' %}
-<h2>Планы закупок</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Тип инвентаря</th>
-        <th>Количество</th>
-        <th>Цена за единицу</th>
-        <th>Поставщик</th>
-        <th>Дата планирования</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for plan in plans %}
-        <tr>
-            <td>{{ plan.inventory_type_id }}</td>
-            <td>{{ plan.quantity }}</td>
-            <td>{{ plan.price }}</td>
-            <td>{{ plan.supplier }}</td>
-            <td>{{ plan.planned_date }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+
+
+     <h2 class="text-center mt-4">План закупок</h2>
+    <hgroup></hgroup><!-- Start: 1 Row 1 Column -->
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">
@@ -40,6 +21,25 @@
         </ul>
     {% endif %}
 {% endwith %}
+
+    <div class="container">
+         <div class="col pr-5 pl-5 mr-5">
+        {% for plan in plans%}
+        <div class="card mb-3 ml-5 mr-5 mt-4 pt-0 pr-5 pl-5 pb-0">
+            <div class="card-body pl-0 pr-0">
+                <h4 class="card-title mb-3">Номер плана: {{plan.id}}</h4>
+                <h6 class="text-muted card-subtitle mb-3">Инвентарь: {{plan.inventory_type_id}}</h6>
+                <h6 class="text-muted card-subtitle mb-3">Количество: {{plan.quantity}}</h6>
+                <h6 class="text-muted card-subtitle mb-3">Дата: {{plan.planned_date}}</h6>
+                <h6 class="text-muted card-subtitle mb-3">Итоговая цена: {{plan.price}}</h6>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+            </div>
+
+
+
 
 <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд
