@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css">
+</head>
+<body>
+{% include 'nav.html' %}
+<section class="position-relative py-4 py-xl-5">
+        <div class="container position-relative">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="font-weight-bold">Создание пользователя</h2>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <h3>Создание</h3>
+                            <form method="post">
+                                {{ form.hidden_tag() }}
+                                 {% for error in form.errors %}
+                                {% if error%}
+                                <div class="alert alert-danger" role="alert">
+                                    <!--                                Обращаемся к ошибкам form(RegisterForm), достаем по ключу ошибки(название колонки) первый элемент, то есть наше сообщение-->
+                                    {{form.errors[error][0]}}
+                                </div>
+                                {%endif%}
+                                {% endfor %}
+                                {{form.name(class = "form-control mb-3", placeholder=inventory_type.name)}}
+                                <label for="description">Описание:</label>
+
+                                {{form.description(class = "form-control mb-3",  placeholder=inventory_type.description)}}
+
+                                {{form.submit(class="btn btn-dark", style="height: 100%;width: 100%;" )}}
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- End: Login Form Basic -->
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+</html>

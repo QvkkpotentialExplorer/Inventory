@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Getting Started</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/styles.css?h=dfaef33cf21ab01819367e0c898ebe04">
+    <link rel="stylesheet" href="/assets/css/Navbar-Centered-Brand-icons.css?h=4364c066228bfcd91f0928b8b726da03">
+</head>
+
+<body>
+{% include 'nav.html' %}
+    <div class="container py-4 py-xl-5">
+        <div class="row mb-5">
+            <div class="col-md-8 col-xl-6 text-center mx-auto">
+                <h2 class="font-weight-bold">Типы инвентаря</h2>
+            </div>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3">
+            {% for inventory_type in inventory_types%}
+            <div class="col mb-4">
+                <div class="card">
+                    <div class = "card-body">
+                    <div class="text-center d-flex flex-column align-items-center align-items-xl-center">
+                        <div class="px-3">
+                            <h4 class="font-weight-bold">{{inventory_type[0].name}}</h4>
+                            <h5>Количество: {{inventory_type[1]}}</h5>
+                            <p> {{inventory_type[0].description}}</p>
+                        {% if current_user.role == "admin"%}
+                        `   <a class="btn btn-dark ml-3" href = "{{ url_for('inventory.redact_inventory_type', inventory_type_id=inventory_type[0].id) }}">Изменить</a>
+                         {% endif %}
+
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+</div>
+    </div>
+    </div><!-- End: Features Centered Icons -->
+    <div class="text-center mt-3">
+    {% if current_user.role == "user"%}
+        <a class="btn btn-dark" href="{{ url_for('application.request_inventory') }}">Создать заявку</a>
+    {% endif %}
+</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

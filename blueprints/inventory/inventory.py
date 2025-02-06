@@ -10,7 +10,7 @@ from data.inventory import Inventory
 from data.inventory_repair import InventoryRepair
 from data.inventory_request import InventoryRequest
 from data.inventory_type import InventoryType
-from form.inventory_add_form import AddInventoryForm, AddInventoryTypeForm
+from form.inventory_add_form import AddInventoryForm, AddInventoryTypeForm, InventoryTypeRedactForm
 from form.inventory_request_form import InventoryRequestForm
 from form.redact_inventory_form import RedactInventoryForm
 from form.redact_inventory_type import RedactInventoryTypeForm
@@ -36,7 +36,7 @@ def add_new_inventory():
                 new_inventory.name = f'{inventory_type.name}{new_inventory.id}'
                 db_sess.add(new_inventory)
                 db_sess.commit()
-            return render_template('admin.html')
+            return redirect(url_for('inventory.available_inventory'))
 
         return render_template('add_new_inventory.html',form = form)
 
@@ -124,7 +124,7 @@ def delete_inventory(inventory_id):
 @inventory.route('/<int:inventory_id>/repair', methods=['GET', 'POST'])
 @login_required
 def create_repair_request(inventory_id):
-    if current_user.role != 'admin':
+    if current_user.role != 'user':
         flash('У вас нет доступа для выполнения этого действия.', 'error')
         return redirect(url_for('inventory.available_inventory'))
 
@@ -190,4 +190,33 @@ def update_inventory_user(inventory_id):
     else:
         flash('Некорректный пользователь.', 'error')
     return redirect(url_for('inventory.available_inventory'))
+
+@inventory.route('/type', methods=['GET','POST'])
+@login_required
+def view_inventory_type():
+    inventory_type = db_sess.query(InventoryType).all()
+    inventory_types = []
+    for inventory in inventory_type:
+        inventory_types.append(
+            (inventory_type[0], len(list(db_sess.query(Inventory).filter(Inventory.inventory_type_id == inventory.id)))))
+
+    return render_template('view_inventory_type.html',inventory_types = inventory_types)
+
+@inventory.route('/type/<int:inventory_type_id>', methods=['GET','POST'])
+@login_required
+def redact_inventory_type(inventory_type_id):
+    inventory_type = db_sess.query(InventoryType).filter(InventoryType.id == inventory_type_id).first()
+    form = InventoryTypeRedactForm()
+    if not inventory_type:
+        abort(404)
+
+    form = InventoryTypeRedactForm()
+
+    if form.validate_on_submit():
+        inventory.name = form.name.data
+        inventory_type.description = form.description.data
+        db_sess.commit()
+        return redirect(url_for('inventory.view_inventory_type'))
+    return render_template('edit_inventory_type.html', form = form, inventory_type = inventory_type)
+
 

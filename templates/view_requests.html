@@ -7,45 +7,53 @@
 <body>
 {% include 'nav.html' %}
 <h2>Заявки на инвентарь</h2>
-
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flashes">
+        {% for category, message in messages %}
+        <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+<div class="container">
+    <div class="col pr-5 pl-5 mr-5">
         {% for request in requests %}
 
+        <div class="card mb-3 ml-5 mr-5 mt-4 pt-0 pr-5 pl-5 pb-0">
+            <div class="card-body pl-0 pr-0">
+                <h4 class="card-title mb-3">Номер заявки: {{ request[0].id }}</h4>
+                <h6 class="text-muted card-subtitle mb-3">Пользователь: {{ request[1] }}</h6>
+                <h6 class="text-muted card-subtitle mb-3">Тип инвентаря: {{ request[2] }}</h6>
+                <h6 class="text-muted card-subtitle mb-3">Количество: {{ request[0].count }}</h6>
+                <h6 class="text-muted card-subtitle mb-3">Дата: {{ request[0].request_date }}</h6>
+                <h5>Статус заявки: {{
+                    "На рассмотрении" if request[0].status == "pending" else
+                    ("Одобрено" if request[0].status == "approved" else "Отклонено")
+                }}</h5>
 
-        <div class="col pr-5 pl-5 mr-5">
-            <div class="card mb-3 ml-5 mr-5 mt-4 pt-0 pr-5 pl-5 pb-0">
-                <div class="card-body pl-0 pr-0">
-                    <h4 class="card-title mb-3">Номер заявки: {{request[0].id}}</h4>
-                    <h6 class="text-muted card-subtitle mb-3">Пользователь: {{request[1]}}</h6>
-                    <h6 class="text-muted card-subtitle mb-3">Тип инвентаря: {{request[2]}}</h6>
-                    <h6 class="text-muted card-subtitle mb-3">Количество: {{request[0].count}}</h6>
-                    <h6 class="text-muted card-subtitle mb-3">Дата: {{request[0].request_date}}</h6>
-                    <h5>Статус заявки: {{"На рассмотрении" if request[0].status == "pending" else ("Одобрено" if request[0].status == "approved" else "Отклонено")}}</h5>
-                    <h6 class="text-muted card-subtitle mb-3"></h6>
-                    {% if current_user.role == 'admin' %}
-<!--                        <form method="post" action="{{ url_for('approve_request', request_id=request[0].id) }}">-->
-<!--                         <button type="submit" class="btn btn-success">Одобрить</button>-->
-<!--                        </form>-->
-<!--    -->
-<!--                <form method="post" action="{{ url_for('reject_request', request_id=request[0].id) }}">-->
-<!--        <button type="submit" class="btn btn-danger">Отклонить</button>-->
-<!--    </form>-->
-                    {%endif%}
+                {% if current_user.role == 'admin' and request[0].status == "pending" %}
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <form method="post"
+                          action="{{ url_for('application.approve_request_inventory', request_id=request[0].id) }}">
+                        <button type="submit" class="btn btn-success">Одобрить</button>
+                    </form>
+                    <form method="post"
+                          action="{{ url_for('application.reject_request_inventory', request_id=request[0].id) }}">
+                        <button type="submit" class="btn btn-danger ml-3">Отклонить</button>
+                    </form>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {%endfor%}
+
+        {% endfor %}
     </div>
+</div>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul class="flashes">
-            {% for category, message in messages %}
-                <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
 
-<script>
+
+    <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд
     setTimeout(function() {
         var flashMessages = document.querySelectorAll('.flash-message');
@@ -53,8 +61,9 @@
             message.style.display = 'none';
         });
     }, 10000);  // 10000 миллисекунд = 10 секунд
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

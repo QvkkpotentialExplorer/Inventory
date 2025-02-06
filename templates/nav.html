@@ -21,7 +21,9 @@
                                                                                href="{{ url_for('inventory.add_new_inventory') }}">Добавить
                     новый инвентарь</a> <a class="dropdown-item"
                                            href="{{ url_for('inventory.add_new_inventory_type') }}">Добавить новый тип
-                    инвентаря</a> <a class="dropdown-item" href="{{ url_for('inventory.available_inventory') }}">Список
+                    инвентаря</a>
+                    <a class ="dropdown-item" href = "{{url_for('inventory.view_inventory_type')}}">Список типов инвентарей</a>
+                    <a class="dropdown-item" href="{{ url_for('inventory.available_inventory') }}">Список
                     доступного инвентаря</a></div>
             </li>
             <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
@@ -37,6 +39,8 @@
             <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_reports') }}">Список отчетов об
                 инвентаре</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.repairs') }}">Заявки на ремонт</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_requests') }}">Заявки на инвентарь</a></li>
+
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('auth_page.logout') }}">Выход</a></li>
@@ -50,15 +54,16 @@
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
             class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.request_inventory') }}">Создать
-                заявку на инвентарь</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_requests') }}">Список заявок на
-                инвентарь</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.available_inventory') }}">Список
-                доступного инвентаря</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.repairs') }}">Список заявок на ремонт
-                инвентаря</a></li>
+         <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Инвентарь </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class ="dropdown-item" href = "{{url_for('inventory.view_inventory_type')}}">Список типов инвентарей</a>
+                    <a class="dropdown-item" href="{{ url_for('inventory.available_inventory') }}">Список
+                    доступного инвентаря</a></div>
+            </li>
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('profile_page.user') }}">Профиль пользователя</a>

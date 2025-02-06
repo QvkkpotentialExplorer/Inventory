@@ -3,6 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from data import db_session
 from data.db_session import db_sess
 from data.inventory import Inventory
+from data.inventory_replacement import InventoryReplacement
 from data.inventory_report import InventoryReport
 from data.inventory_type import InventoryType
 from data.user import User
@@ -84,7 +85,14 @@ def update_request_status(request_id):
 @login_required
 def view_requests():
     if current_user.role == 'admin':
-        requests = db_sess.query(InventoryRequest).all()
+        requests = (
+            db_sess.query(InventoryRequest, User.username, InventoryType.name)
+            .join(User, InventoryRequest.user_id == User.id)  # Join InventoryRequest with User
+            .join(InventoryType,
+                  InventoryRequest.inventory_type_id == InventoryType.id)  # Join InventoryRequest with InventoryType
+            .filter(InventoryRequest.status == "pending")  # Filter requests for the current user
+            .all()
+        )
     else:
         requests = (
             db_sess.query(InventoryRequest, User.username, InventoryType.name)
@@ -135,7 +143,43 @@ def add_report(inventory_id):
     return render_template('add_report.html', form=form)
 
 
-@application.route('/approve/')
+@application.route('/approve/inventory/<int:request_id>/', methods=['GET', 'POST'])
 @login_required
-def approve_inventory_request():
+def approve_request_inventory(request_id):
+    if current_user.role == "admin":
+        inventory_request = db_sess.query(InventoryRequest).filter(InventoryRequest.id == request_id).first()
+
+        inventories = db_sess.query(Inventory).filter(Inventory.inventory_type_id == inventory_request.inventory_type_id,Inventory.status=="new").all()
+        count = len(inventories)
+
+        if count<inventory_request.count:
+            print('Я здесь')
+            flash('Недостаточно свободно инвентаря данного типа, для одобрения заявки', 'danger')
+        else:
+            for inventory in inventories[0:inventory_request.count]:
+                inventory.user_id = inventory_request.user_id
+                inventory.status = 'in_use'
+            inventory_request.status = 'approved'
+            db_sess.commit()
+            flash('Успешное одобрение заявки', 'success')
+    else:
+        return abort(401)
     return redirect(url_for('application.view_requests'))
+
+@application.route('/reject/inventory/<int:request_id>', methods=['GET', 'POST'])
+@login_required
+def reject_request_inventory(request_id):
+    if current_user.role == 'admin':
+        inventory_request = db_sess.query(InventoryRequest).filter(InventoryRequest.id == request_id).first()
+        inventory_request.status ='rejected'
+        db_sess.commit()
+    else:
+        return abort(401)
+    return redirect(url_for('application.view_requests'))
+
+@application.route('/replacement/<int:inventory_id>/')
+@login_required
+def replacement_inventory_request(inventory_id):
+    inventory = db_sess.query(Inventory).filter(Inventory.user_id==current_user.id,Inventory.id == inventory_id).first()
+    if not inventory:
+        return abort(401)

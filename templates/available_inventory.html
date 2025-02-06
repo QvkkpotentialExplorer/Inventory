@@ -66,12 +66,13 @@
                 </form>
 
                 <!-- Если статус 'broken', показываем кнопку для подачи заявки на ремонт -->
-                <p>Закреплён за: {{ item.username if item.user_id else "Не закреплён" }}</p>
+                <p>Закреплён за: {{ item[2] if item[0].user_id else "Не закреплён" }}</p>
                 <form method="POST" action="{{ url_for('inventory.update_inventory_user', inventory_id=item[0].id) }}">
                     <select name="user_id" required>
+
                         <option value="">Не закреплён</option>
                         {% for user in users %}
-                        <option value="{{ user.id }}" {% if user.id == item.user_id %}selected{% endif %}>{{ user.username }}
+                        <option value="{{ item[1].id }}" {% if user.id == item.user_id %}selected{% endif %}>{{ user.username }}
                         </option>
                         {% endfor %}
                     </select>
