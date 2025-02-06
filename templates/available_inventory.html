@@ -36,8 +36,20 @@
 </head>
 <body>
 {% include 'nav.html' %}
+
 <div class="container">
     <h2 class="text-center">Инвентарь</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+
     <div class="inventory-cards">
         {% for item in items %}
 
@@ -86,22 +98,16 @@
                 {% endif %}
 
                 <!-- Кнопка для создания отчета по инвентарю -->
-                <a href="{{ url_for('application.add_report', inventory_id=item[0].id) }}" class="btn btn-success">Заявка на ремонт</a>
+                {% if current_user.role=='user%}
+                    <a href="{{ url_for('application.add_report', inventory_id=item[0].id) }}" class="btn btn-success">Заявка на ремонт</a>
+                    <a href="{{ url_for('application.replacement_inventory_request', inventory_replacement_id=item[0].id) }}" class="btn btn-success">Заявка на ремонт</a>
+                {% endif %}
+
 
             </div>
             {% endfor %}
     </div>
     </div>
-</div>
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul class="flashes">
-            {% for category, message in messages %}
-                <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
 
 
 

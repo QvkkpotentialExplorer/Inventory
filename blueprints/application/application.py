@@ -3,9 +3,11 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from data import db_session
 from data.db_session import db_sess
 from data.inventory import Inventory
+from data.inventory_replacement import InventoryReplacement
 from data.inventory_report import InventoryReport
 from data.inventory_type import InventoryType
 from data.user import User
+from form.inventory_replacement_form import AddInventoryReplacementForm
 from form.inventory_report_form import InventoryReportForm
 from form.inventory_request_form import InventoryRequestForm
 from data.inventory_request import InventoryRequest
@@ -176,8 +178,95 @@ def reject_request_inventory(request_id):
         return abort(401)
     return redirect(url_for('application.view_requests'))
 
-@application.route('/replacement/')
+@application.route('/replacement/<int:inventory_id>')
 @login_required
 def replacement_inventory_request(inventory_id):
+    if current_user.role == 'user':
+        inventory = db_sess.query(Inventory).filter(Inventory.user_id == current_user.id, status = 'in_use')
+        if inventory:
+            return abort(401)
+        form = AddInventoryReplacementForm()
+        form.inventory_id.data = inventory.id
+        if form.validate_on_submit():
+            inventory_replacement = InventoryReplacement(inventory_id = inventory_id,reason_description = form.reason_description.data)
+            db_sess.add(inventory_replacement)
+            db_sess.commit()
+            flash('Заявка успешно создана!', 'success')
+            return redirect(url_for('inventory.available_inventory'))
 
-    return render_template('inventory_replacement.html')
+        return render_template('inventory_replacement.html')
+    else:
+        return abort(401)
+
+
+
+
+@application.route('replacement/requests/')
+@login_required
+def view_replacement_requests():
+    if current_user.role == 'admin':
+        requests = (
+            db_sess.query(InventoryReplacement, User.username, InventoryType.name,Inventory.id)
+            .join(User, InventoryReplacement.user_id == User.id)  # Join InventoryRequest with User
+            .join(Inventory,
+                  InventoryRequest.inventory_id == InventoryReplacement.inventory_id)
+            .join(InventoryType,InventoryType.id == Inventory.inventory_type_id)# Join InventoryRequest with InventoryType
+            .filter(InventoryReplacement.status == "pending")  # Filter requests for the current user
+            .all()
+        )
+        return render_template('view_replacement_requests.html', requests = requests,  current_user = current_user)
+    else:
+        requests = (
+            db_sess.query(InventoryReplacement, User.username, InventoryType.name, Inventory.id)
+            .join(User, InventoryReplacement.user_id == User.id)  # Join InventoryRequest with User
+            .join(Inventory,
+                  InventoryRequest.inventory_id == InventoryReplacement.inventory_id)
+            .join(InventoryType,
+                  InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
+            .filter(InventoryReplacement.status == "pending", InventoryReplacement.user_id == current_user.id)  # Filter requests for the current user
+            .all()
+        )
+        return render_template('view_replacement_requests.html', requests = requests, current_user = current_user)
+
+
+
+
+@application.route('replacement/approve/<int:inventory_replacement_id>')
+@login_required
+def replacement_request_approve(inventory_replacement_id):
+    if current_user.role == 'admin':
+        inventory_replacement_request = db_sess.query(InventoryReplacement).filter(InventoryReplacement.id == inventory_replacement_id).first()
+        if not inventory_replacement_request:
+            return abort(402)
+        inventory = db_sess.query(Inventory).filter(Inventory.id == inventory_replacement_request.inventory_id).first()
+        inventories = db_sess.query(Inventory).filter(
+            Inventory.inventory_type_id == inventory.inventory_type_id, Inventory.status == "new").all()
+        count = len(inventories)
+        if count <1:
+            flash('Недостаточно свободно инвентаря данного типа, для одобрения заявки', 'danger')
+        else:
+            inventory_replacement_request.status = 'approved'
+            inventory.status = 'used'
+            inventory.user_id = None
+            inventories[0].user_id = current_user.id
+            inventories[0].status = 'in_use'
+            db_sess.commit()
+            flash('Заявка одобрена!', 'success')
+            return redirect(url_for('application.view_replacement_requests'))
+    else:
+        return abort(401)
+
+
+
+@application.route('replacement/reject/<int:inventory_replacement_id>')
+@login_required
+def replacement_reject_request(inventory_replacement_id):
+    if current_user.role == 'admin':
+        inventory_replacement_request = db_sess.query(InventoryReplacement).filter(
+            InventoryReplacement.id == inventory_replacement_id).first()
+        if not inventory_replacement_request:
+            return abort(402)
+        inventory_replacement_request.status = 'rejected'
+        db_sess.commit()
+        flash('Заявка отклонена', 'danger')
+        return redirect(url_for('view_replacement_requests.html'))
