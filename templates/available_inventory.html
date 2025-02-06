@@ -86,8 +86,7 @@
                 {% endif %}
 
                 <!-- Кнопка для создания отчета по инвентарю -->
-                <a href="{{ url_for('application.add_report', inventory_id=item[0].id) }}" class="btn btn-success">Составить
-                    отчёт</a>
+                <a href="{{ url_for('application.add_report', inventory_id=item[0].id) }}" class="btn btn-success">Заявка на ремонт</a>
 
             </div>
             {% endfor %}

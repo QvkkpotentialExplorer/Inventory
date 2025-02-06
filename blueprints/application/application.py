@@ -3,7 +3,6 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from data import db_session
 from data.db_session import db_sess
 from data.inventory import Inventory
-from data.inventory_replacement import InventoryReplacement
 from data.inventory_report import InventoryReport
 from data.inventory_type import InventoryType
 from data.user import User
@@ -177,9 +176,8 @@ def reject_request_inventory(request_id):
         return abort(401)
     return redirect(url_for('application.view_requests'))
 
-@application.route('/replacement/<int:inventory_id>/')
+@application.route('/replacement/')
 @login_required
 def replacement_inventory_request(inventory_id):
-    inventory = db_sess.query(Inventory).filter(Inventory.user_id==current_user.id,Inventory.id == inventory_id).first()
-    if not inventory:
-        return abort(401)
+
+    return render_template('inventory_replacement.html')
