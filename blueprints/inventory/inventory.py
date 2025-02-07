@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 import os
 
+from data.inventory_replacement import InventoryReplacement
 from data.user import User
 from form.inventory_repair_form import InventoryRepairForm
 from data import db_session
@@ -127,6 +128,19 @@ def create_repair_request(inventory_id):
     if current_user.role != 'user':
         flash('У вас нет доступа для выполнения этого действия.', 'error')
         return redirect(url_for('inventory.available_inventory'))
+    inventory = db_sess.query(Inventory).filter(Inventory.id == inventory_id, Inventory.user_id == current_user.id)
+    if not inventory:
+        flash('Вы не имеете доступа к своей матери','danger')
+
+    inventory_replacement = db_sess.query(InventoryReplacement).filter( InventoryReplacement.inventory_id == int(inventory_id), InventoryReplacement.status == 'pending').first()
+    inventory_repair = db_sess.query(InventoryRepair).filter(InventoryRepair.status == 'pending', InventoryRepair.inventory_id == int(inventory_id)).first()
+
+    if inventory_repair:
+        flash('Заявка на ремонт уже подана')
+        return redirect(url_for('inventory.repairs'))
+    if inventory_replacement:
+        flash('Была подана заявка на замену')
+        return redirect(url_for('application.view_replacement_requests'))
 
     form = InventoryRepairForm()
     if form.validate_on_submit():
@@ -136,6 +150,8 @@ def create_repair_request(inventory_id):
             status='pending',
             description=form.description.data
         )
+
+
         db_sess.add(repair)
         db_sess.commit()
         flash('Заявка на ремонт инвентаря успешно создана!', 'success')
@@ -154,15 +170,43 @@ def repairs():
 
     # Если фильтр по статусу задан
     if status_filter:
-        repair_requests = db_sess.query(InventoryRepair).filter_by(status=status_filter).all()
+        repair_requests = (
+            db_sess.query(InventoryRepair, User.username, InventoryType.name, Inventory.id)
+            .join(User, InventoryRepair.user_id == User.id)  # Join InventoryRequest with User
+            .join(Inventory,
+                  Inventory.id == InventoryRepair.inventory_id)
+            .join(InventoryType,
+                  InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
+            .filter(InventoryRepair.status == "pending")  # Filter requests for the current user
+            .all()
+        )
     else:
-        repair_requests = db_sess.query(InventoryRepair).all()
+        repair_requests = (
+            db_sess.query(InventoryRepair, User.username, InventoryType.name, Inventory.id)
+            .join(User, InventoryRepair.user_id == User.id)  # Join InventoryRequest with User
+            .join(Inventory,
+                  Inventory.id == InventoryRepair.inventory_id)
+            .join(InventoryType,
+                  InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
+            .filter(InventoryRepair.status == "pending")  # Filter requests for the current user
+            .all()
+        )
 
     if current_user.role == 'admin':
-        return render_template('repairs.html', repair_requests=repair_requests)
+        return render_template('repairs.html', requests=repair_requests)
 
-    user_repairs = db_sess.query(InventoryRepair).filter_by(user_id=current_user.id).all()
-    return render_template('repairs.html', repair_requests=user_repairs)
+    user_repairs = (
+        db_sess.query(InventoryRepair, User.username, InventoryType.name, Inventory.id)
+        .join(User, InventoryRepair.user_id == User.id)  # Join InventoryRequest with User
+        .join(Inventory,
+              Inventory.id == InventoryRepair.inventory_id)
+        .join(InventoryType,
+              InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
+        .filter(
+                InventoryRepair.user_id == current_user.id)  # Filter requests for the current user
+        .all()
+    )
+    return render_template('repairs.html', requests = user_repairs)
 
 
 @inventory.route('/<int:inventory_id>/update_user', methods=['POST'])
@@ -209,7 +253,6 @@ def view_inventory_type():
 @login_required
 def redact_inventory_type(inventory_type_id):
     inventory_type = db_sess.query(InventoryType).filter(InventoryType.id == inventory_type_id).first()
-    form = InventoryTypeRedactForm()
     if not inventory_type:
         abort(404)
 
@@ -223,3 +266,33 @@ def redact_inventory_type(inventory_type_id):
     return render_template('edit_inventory_type.html', form = form, inventory_type = inventory_type)
 
 
+@inventory.route('repair/approve/<int:inventory_repair_id>', methods = ['POST'])
+@login_required
+def approve_repair(inventory_repair_id):
+    if current_user.role == 'admin':
+        inventory_repair = db_sess.query(InventoryRepair).filter(InventoryRepair.id == inventory_repair_id, InventoryRepair.status == 'pending').first()
+        inventory_item = db_sess.query(Inventory).filter(Inventory.id == inventory_repair.inventory_id).first()
+        if not inventory_repair:
+            return abort(401)
+        inventory_repair.status='approved'
+        inventory_item.status = 'broken'
+        db_sess.commit()
+        flash('Заявка успешно одобрена','success')
+        return redirect(url_for('inventory.repairs'))
+    else:
+        return flash('Вы не имеет доступа к этому методу')
+
+@inventory.route('repair/reject/<int:inventory_repair_id>', methods = ['POST'])
+@login_required
+def reject_repair(inventory_repair_id):
+    if current_user.role == 'admin':
+        inventory_repair = db_sess.query(InventoryRepair).filter(InventoryRepair.id == inventory_repair_id,
+InventoryRepair.status == 'pending').first()
+        if not inventory_repair:
+            return abort(401)
+        inventory_repair.status = 'rejected'
+        db_sess.commit()
+        flash('Заявка успешно отклонена', 'danger')
+        return redirect(url_for('inventory.repairs'))
+    else:
+        return flash('Вы не имеет доступа к этому методу')

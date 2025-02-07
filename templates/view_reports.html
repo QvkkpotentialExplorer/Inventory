@@ -29,8 +29,7 @@
             <td>{{ report.user_id }}</td>
         </tr>
         {% endfor %}
-    </tbody>
-</table>
+
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">

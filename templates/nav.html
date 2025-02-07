@@ -56,28 +56,49 @@
     </div>
 </nav>
 {% else %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark"><a class="navbar-brand"
-                                                            href="{{ url_for('index') }}">Главная</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{{ url_for('index') }}">Главная</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
-            class="navbar-toggler-icon"></span></button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <ul class="navbar-nav mr-auto">
-         <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
-                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Инвентарь </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class ="dropdown-item" href = "{{url_for('inventory.view_inventory_type')}}">Список типов инвентарей</a>
-                    <a class="dropdown-item" href="{{ url_for('inventory.available_inventory') }}">Список
-                    доступного инвентаря</a></div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav">
+            <!-- Инвентарь -->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownInventory" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Инвентарь
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownInventory">
+                    <a class="dropdown-item" href="{{ url_for('inventory.view_inventory_type') }}">Список типов инвентаря</a>
+                    <a class="dropdown-item" href="{{ url_for('inventory.available_inventory') }}">Список доступного инвентаря</a>
+                </div>
+            </li>
+
+            <!-- Заявки -->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRequests" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Заявки
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownRequests">
+                    <a class="dropdown-item" href="{{ url_for('inventory.repairs') }}">Заявки на ремонт</a>
+                    <a class="dropdown-item" href="{{ url_for('application.view_requests') }}">Заявки на инвентарь</a>
+                    <a class="dropdown-item" href="{{ url_for('application.view_replacement_requests') }}">Заявки на замену</a>
+                </div>
             </li>
         </ul>
+
+        <!-- Правый блок с профилем и выходом -->
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('profile_page.user') }}">Профиль пользователя</a>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth_page.logout') }}">Выход</a>
             </li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth_page.logout') }}">Выход</a></li>
         </ul>
     </div>
 </nav>
+
 {% endif %}

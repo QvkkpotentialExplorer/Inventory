@@ -13,5 +13,5 @@ class InventoryRepair(Base):
     description = Column(Text)
 
     __table_args__ = (
-        CheckConstraint("status IN ('pending', 'in_progress', 'completed')", name="check_repair_status"),
+        CheckConstraint("status IN ('pending', 'approved', 'rejected')", name="check_repair_status"),
     )

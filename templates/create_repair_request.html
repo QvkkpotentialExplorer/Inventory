@@ -11,13 +11,13 @@
 {% include 'nav.html' %}
 <h2>Заявка на ремонт инвентаря</h2>
 
-{% include 'nav.html' %}
+
   <!-- Start: Login Form Basic -->
     <section class="position-relative py-4 py-xl-5">
         <div class="container position-relative">
             <div class="row mb-5">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h2 class="font-weight-bold">Создание пользователя</h2>
+                    <h2 class="font-weight-bold">Создание заявки на ремонт</h2>
                 </div>
             </div>
             <div class="row d-flex justify-content-center">
@@ -35,7 +35,7 @@
                                 </div>
                                 {%endif%}
                                 {% endfor %}
-                                {{form.description(class = "form-control mb-3", placeholder="Логин")}}
+                                {{form.description(class = "form-control mb-3", placeholder="Описание поломки")}}
 
                                 {{form.submit(class="btn btn-dark", style="height: 100%;width: 100%;" )}}
 
@@ -48,7 +48,7 @@
     </section><!-- End: Login Form Basic -->
 
 
-<a href="{{ url_for('inventory.available_inventory') }}">Назад к инвентарю</a>
+
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
 <ul class="flashes">

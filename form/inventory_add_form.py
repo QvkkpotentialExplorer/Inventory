@@ -7,7 +7,13 @@ from data.inventory_type import InventoryType
 
 
 class AddInventoryTypeForm(FlaskForm):
-    name = StringField('Название',validators=[DataRequired()])
+    def validate_name(form,field):
+        if field.data > 30:
+            raise ValidationError("Количество символов в имени не должно быть больше 30")
+    def validate_description(form,field):
+        if field.data > 200:
+            raise ValidationError("Описание типа инвентаря не должно превышать 200 символов")
+    name = StringField('Название',validators=[DataRequired(),validate_name])
     description = StringField('Описание',validators=[DataRequired()])
     submit = SubmitField('Создать')
 

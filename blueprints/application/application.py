@@ -3,6 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from data import db_session
 from data.db_session import db_sess
 from data.inventory import Inventory
+from data.inventory_repair import InventoryRepair
 from data.inventory_replacement import InventoryReplacement
 from data.inventory_report import InventoryReport
 from data.inventory_type import InventoryType
@@ -15,22 +16,7 @@ from data.inventory_request import InventoryRequest
 application = Blueprint('application', __name__, url_prefix='/application/', template_folder='../templates')
 
 
-@application.route('/requests/add_request', methods=['GET', 'POST'])
-@login_required
-def request_inventory():
-    form = InventoryRequestForm()
-    if form.validate_on_submit():
-        request_item = InventoryRequest(
-            user_id=current_user.id,
-            inventory_type_id=form.inventory_type_id.data,
-            count=form.count.data,
-            status='pending'
-        )
-        db_sess.add(request_item)
-        db_sess.commit()
-        flash('Заявка успешно создана!', 'success')
-        return redirect(url_for('application.view_requests'))
-    return render_template('inventory_request.html', form=form)
+
 
 
 @application.route('/requests/<int:request_id>/update', methods=['POST'])
@@ -82,30 +68,7 @@ def update_request_status(request_id):
 
 
 
-@application.route('/requests', methods=['GET'])
-@login_required
-def view_requests():
-    if current_user.role == 'admin':
-        requests = (
-            db_sess.query(InventoryRequest, User.username, InventoryType.name)
-            .join(User, InventoryRequest.user_id == User.id)  # Join InventoryRequest with User
-            .join(InventoryType,
-                  InventoryRequest.inventory_type_id == InventoryType.id)  # Join InventoryRequest with InventoryType
-            .filter(InventoryRequest.status == "pending")  # Filter requests for the current user
-            .all()
-        )
-    else:
-        requests = (
-            db_sess.query(InventoryRequest, User.username, InventoryType.name)
-            .join(User, InventoryRequest.user_id == User.id)  # Join InventoryRequest with User
-            .join(InventoryType,
-                  InventoryRequest.inventory_type_id == InventoryType.id)  # Join InventoryRequest with InventoryType
-            .filter(InventoryRequest.user_id == current_user.id)  # Filter requests for the current user
-            .all()
-        )
 
-        print(requests)
-    return render_template('view_requests.html', requests=requests)
 
 
 @application.route('/reports', methods=['GET'])
@@ -142,8 +105,32 @@ def add_report(inventory_id):
         flash('Отчёт успешно добавлен!', 'success')
         return redirect(url_for('application.view_reports'))
     return render_template('add_report.html', form=form)
-
-
+@application.route('/requests/add_request', methods=['GET', 'POST'])
+@login_required
+def request_inventory():
+    form = InventoryRequestForm()
+    if form.validate_on_submit():
+        request_item = InventoryRequest(
+            user_id=current_user.id,
+            inventory_type_id=form.inventory_type_id.data,
+            count=form.count.data,
+            status='pending'
+        )
+        db_sess.add(request_item)
+        db_sess.commit()
+        flash('Заявка успешно создана!', 'success')
+        return redirect(url_for('application.view_requests'))
+    return render_template('inventory_request.html', form=form)
+@application.route('/reject/inventory/<int:request_id>', methods=['GET', 'POST'])
+@login_required
+def reject_request_inventory(request_id):
+    if current_user.role == 'admin':
+        inventory_request = db_sess.query(InventoryRequest).filter(InventoryRequest.id == request_id).first()
+        inventory_request.status ='rejected'
+        db_sess.commit()
+    else:
+        return abort(401)
+    return redirect(url_for('application.view_requests'))
 @application.route('/approve/inventory/<int:request_id>/', methods=['GET', 'POST'])
 @login_required
 def approve_request_inventory(request_id):
@@ -167,17 +154,32 @@ def approve_request_inventory(request_id):
     else:
         return abort(401)
     return redirect(url_for('application.view_requests'))
-
-@application.route('/reject/inventory/<int:request_id>', methods=['GET', 'POST'])
+@application.route('/requests', methods=['GET'])
 @login_required
-def reject_request_inventory(request_id):
+def view_requests():
     if current_user.role == 'admin':
-        inventory_request = db_sess.query(InventoryRequest).filter(InventoryRequest.id == request_id).first()
-        inventory_request.status ='rejected'
-        db_sess.commit()
+        requests = (
+            db_sess.query(InventoryRequest, User.username, InventoryType.name)
+            .join(User, InventoryRequest.user_id == User.id)  # Join InventoryRequest with User
+            .join(InventoryType,
+                  InventoryRequest.inventory_type_id == InventoryType.id)  # Join InventoryRequest with InventoryType
+            .filter(InventoryRequest.status == "pending")  # Filter requests for the current user
+            .all()
+        )
     else:
-        return abort(401)
-    return redirect(url_for('application.view_requests'))
+        requests = (
+            db_sess.query(InventoryRequest, User.username, InventoryType.name)
+            .join(User, InventoryRequest.user_id == User.id)  # Join InventoryRequest with User
+            .join(InventoryType,
+                  InventoryRequest.inventory_type_id == InventoryType.id)  # Join InventoryRequest with InventoryType
+            .filter(InventoryRequest.user_id == current_user.id)  # Filter requests for the current user
+            .all()
+        )
+
+        print(requests)
+    return render_template('view_requests.html', requests=requests)
+
+
 
 @application.route('/replacement/<int:inventory_id>', methods = ['GET','POST'])
 @login_required
@@ -187,9 +189,20 @@ def replacement_inventory_request(inventory_id):
         print(inventory)
         if not inventory:
             return abort(401)
+        inventory_replacement = db_sess.query(InventoryReplacement).filter(
+            InventoryReplacement.inventory_id == int(inventory_id), InventoryReplacement.status == 'pending').first()
+        inventory_repair = db_sess.query(InventoryRepair).filter(InventoryRepair.status == 'pending',InventoryRepair.inventory_id == int(inventory_id)).first()
+
+        if inventory_repair:
+            flash('Была подана заявка на ремонт','danger')
+            return redirect(url_for('inventory.repairs'))
+        if inventory_replacement:
+            flash('Заявка на замену уже подана','danger')
+            return redirect(url_for('application.view_replacement_requests'))
         form = AddInventoryReplacementForm()
         form.inventory_id.data = inventory.id
-        print('ЧТО ЗА НАХУЙ')
+
+
         if form.validate_on_submit():
             print(inventory.id)
             inventory_replacement = InventoryReplacement(user_id = current_user.id,status = 'pending',inventory_id = inventory.id,reason_description = form.reason_description.data)
@@ -224,17 +237,13 @@ def view_replacement_requests():
             db_sess.query(InventoryReplacement, User.username, InventoryType.name, Inventory.id)
             .join(User, InventoryReplacement.user_id == User.id)  # Join InventoryRequest with User
             .join(Inventory,
-                  InventoryRequest.inventory_id == InventoryReplacement.inventory_id)
+                  Inventory.id== InventoryReplacement.inventory_id)
             .join(InventoryType,
                   InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
             .filter(InventoryReplacement.status == "pending", InventoryReplacement.user_id == current_user.id)  # Filter requests for the current user
             .all()
         )
         return render_template('view_replacement_requests.html', requests = requests, current_user = current_user)
-
-
-
-
 @application.route('replacement/approve/<int:inventory_replacement_id>',methods = ['GET','POST'])
 @login_required
 def replacement_request_approve(inventory_replacement_id):
@@ -259,9 +268,6 @@ def replacement_request_approve(inventory_replacement_id):
             return redirect(url_for('application.view_replacement_requests'))
     else:
         return abort(401)
-
-
-
 @application.route('replacement/reject/<int:inventory_replacement_id>',methods = ['GET','POST'])
 @login_required
 def replacement_reject_request(inventory_replacement_id):

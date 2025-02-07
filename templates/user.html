@@ -5,9 +5,9 @@
     <title>Title</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css">
 </head>
-<body>
+<body  style="height: 100vh;background-image: url(https://cvam.ru/wp-content/uploads/2023/10/sportivnyi-inventar-12.webp);background-position: center;background-size: cover;">
 {% include 'nav.html' %}
-<p>Страница пользователя</p>
+
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">
@@ -17,7 +17,25 @@
         </ul>
     {% endif %}
 {% endwith %}
-
+    <!-- Start: Hero Parallax -->
+    <section>
+        <!-- Start: Parallax Background -->
+        <div data-bss-parallax-bg="true">
+            <!-- Start: Hero Banner -->
+            <section class="py-4 py-xl-5">
+                <div class="container h-100">
+                    <div class="row h-100">
+                        <div class="col-md-10 col-xl-8 text-center d-flex d-sm-flex d-md-flex justify-content-center align-items-center mx-auto justify-content-md-start align-items-md-center justify-content-xl-center">
+                            <div>
+                                <h1 class="text-uppercase font-weight-bold mb-3">INVENTORY CRM</h1>
+                                <p class="mb-4">Это страница пользователя. Вы можете перейти к учету своего инвентаря&nbsp;</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section><!-- End: Hero Banner -->
+        </div><!-- End: Parallax Background -->
+    </section><!-- End: Hero Parallax -->
 <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд
     setTimeout(function() {
