@@ -23,9 +23,9 @@
 ![Node.js](/docs/img/Func.png)
 | Блок-схема | Код |
 |----------|----------|
-|![Node.js](/docs/img/createeventbs.jpg)|![No Name](/docs/img/createevent.png)|
-|![Node.js](/docs/img/firebyuserbs.jpg)|![Node.js](/docs/img/firebyuser.PNG)|
-|![Node.js](/docs/img/setitemforcellbs.jpg)|![Node.js](/docs/img/setitemforcell.PNG)|
+|![Node.js](/docs/img/Получение.png)|![No Name](/docs/img/Получение_код.png)|
+|![Node.js](/docs/img/Замена.png)|![Node.js](/docs/img/firebyuser.PNG)|
+|![Node.js](/docs/img/Ремонт.png)|![Node.js](/docs/img/setitemforcell.PNG)|
 
 ![Node.js](/docs/img/Inter.png)
 ![Node.js](/docs/img/reg.jpg)
