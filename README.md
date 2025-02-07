@@ -25,7 +25,7 @@
 |----------|----------|
 |![Node.js](/docs/img/Получение.png)|![No Name](/docs/img/Получение_код.jpg)|
 |![Node.js](/docs/img/Замена.png)|![Node.js](/docs/img/Замена_код.jpg)|
-|![Node.js](/docs/img/Ремонт.png)|![Node.js](/docs/img/setitemforcell.PNG)|
+|![Node.js](/docs/img/Ремонт.png)|![Node.js](/docs/img/Ремонт_код.jpg)|
 
 ![Node.js](/docs/img/Inter.png)
 ![Node.js](/docs/img/Регистрация.png)
