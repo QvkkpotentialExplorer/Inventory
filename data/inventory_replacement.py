@@ -12,7 +12,7 @@ class InventoryReplacement(Base):
     usage_date = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'))
     status = Column(String, nullable=False)
     reason_description = Column(String)
-    photo = Column(String,nullable=False)
+
     __table_args__ = (
         CheckConstraint("status IN ('pending', 'approved', 'rejected')", name="check_request_status"),
     )

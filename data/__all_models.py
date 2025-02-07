@@ -5,4 +5,4 @@ from data.inventory_report import InventoryReport
 from data.inventory_request import InventoryRequest
 from data.procrument_plan import ProcurementPlan
 from data.inventory_type import InventoryType
-from data.inventory_replacement import InventoryReppacement
+from data.inventory_replacement import InventoryReplacement

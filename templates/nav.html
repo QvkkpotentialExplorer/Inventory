@@ -1,4 +1,5 @@
 {% if current_user.role == "admin" %}
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark"><a class="navbar-brand"
                                                             href="{{ url_for('index') }}">Главная</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -26,20 +27,27 @@
                     <a class="dropdown-item" href="{{ url_for('inventory.available_inventory') }}">Список
                     доступного инвентаря</a></div>
             </li>
-            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
                                              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Закупки </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown"><a class="dropdown-item"
-                                                                               href="{{ url_for('purchase.add_procurement_plan') }}">Добавить
-                    план закупок</a> <a class="dropdown-item" href="{{ url_for('purchase.view_procurement_plans') }}">Список
-                    планов закупок</a> <a class="dropdown-item"
-                                          href="{{ url_for('purchase.import_procurement_data') }}">Импорт данных о
-                    закупках</a></div>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ url_for('purchase.add_procurement_plan') }}">Добавить план закупок</a>
+                    <a class="dropdown-item" href="{{ url_for('purchase.view_procurement_plans') }}">Список планов закупок</a>
+                    <a class="dropdown-item" href="{{ url_for('purchase.import_procurement_data') }}">Импорт данных о
+                    закупках</a>
+                </div>
             </li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_reports') }}">Список отчетов об
-                инвентаре</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.repairs') }}">Заявки на ремонт</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('application.view_requests') }}">Заявки на инвентарь</a></li>
+
+            <li class="nav-item dropdown">
+                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">   Заявки </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ url_for('inventory.repairs') }}">Заявки на ремонт</a>
+                    <a class="dropdown-item" href="{{ url_for('application.view_requests') }}">Заявки на инвентарь</a>
+                    <a class="dropdown-item" href="{{ url_for('application.view_replacement_requests')}}">Заявки на замену</a>
+                </div>
+            </li>
 
         </ul>
         <ul class="navbar-nav ml-auto">

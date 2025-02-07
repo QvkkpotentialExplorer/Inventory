@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css">
+
 </head>
 <body>
 {% include 'nav.html' %}
@@ -26,7 +28,7 @@
                 <h6 class="text-muted card-subtitle mb-3">Пользователь: {{ request[1] }}</h6>
                 <h6 class="text-muted card-subtitle mb-3">Тип инвентаря: {{ request[2] }}</h6>
                 <h6 class="text-muted card-subtitle mb-3">Id инвентаря: {{request[3]}}</h6>
-                <h6 class="text-muted card-subtitle mb-3">Дата: {{ request[0].request_date }}</h6>
+                <h6 class="text-muted card-subtitle mb-3">Дата: {{ request[0].usage_date }}</h6>
                 <h5>Статус заявки: {{
                     "На рассмотрении" if request[0].status == "pending" else
                     ("Одобрено" if request[0].status == "approved" else "Отклонено")
@@ -35,11 +37,11 @@
                 {% if current_user.role == 'admin' and request[0].status == "pending" %}
                 <div class="d-flex flex-wrap gap-2 mt-3">
                     <form method="post"
-                          action="{{ url_for('application.replacement_request_approve', request_id=request[0].id) }}">
+                          action="{{ url_for('application.replacement_request_approve', inventory_replacement_id=request[0].id) }}">
                         <button type="submit" class="btn btn-success">Одобрить</button>
                     </form>
                     <form method="post"
-                          action="{{ url_for('application.replacement_reject_request', request_id=request[0].id) }}">
+                          action="{{ url_for('application.replacement_reject_request', inventory_replacement_id=request[0].id) }}">
                         <button type="submit" class="btn btn-danger ml-3">Отклонить</button>
                     </form>
                 </div>

@@ -17,8 +17,8 @@ class AddInventoryForm(FlaskForm):
         print([name[0] for name in db_sess.query(InventoryType.name).all()])
         return [name[0] for name in db_sess.query(InventoryType.name).all()]
     def validate_count(form, field):
-        if field.data > 20:
-            raise ValidationError("Количество символов в имени не может быть больше 100.")
+        if field.data > 100:
+            raise ValidationError("Количество инвентарей в имени не может быть больше 100.")
 
     print(db_sess.query(InventoryType.name).all())
     inventory_type = SelectField('Тип инвентаря', validators=[DataRequired()],choices= get_inventory_type())

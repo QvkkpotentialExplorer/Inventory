@@ -178,6 +178,7 @@ def update_inventory_user(inventory_id):
         return redirect(url_for('inventory.available_inventory'))
 
     new_user_id = request.form.get('user_id')
+    print(new_user_id)
     if new_user_id:
         user = db_sess.query(User).get(new_user_id)
         if user:

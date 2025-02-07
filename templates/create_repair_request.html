@@ -11,20 +11,41 @@
 {% include 'nav.html' %}
 <h2>Заявка на ремонт инвентаря</h2>
 
-<div class="repair-form">
-    <form method="POST">
-        {{ form.hidden_tag() }}
+{% include 'nav.html' %}
+  <!-- Start: Login Form Basic -->
+    <section class="position-relative py-4 py-xl-5">
+        <div class="container position-relative">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="font-weight-bold">Создание пользователя</h2>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <h3>Создание</h3>
+                            <form method="post">
+                                {{ form.hidden_tag() }}
+                                 {% for error in form.errors %}
+                                {% if error%}
+                                <div class="alert alert-danger" role="alert">
+                                    <!--                                Обращаемся к ошибкам form(RegisterForm), достаем по ключу ошибки(название колонки) первый элемент, то есть наше сообщение-->
+                                    {{form.errors[error][0]}}
+                                </div>
+                                {%endif%}
+                                {% endfor %}
+                                {{form.description(class = "form-control mb-3", placeholder="Логин")}}
 
-        <!-- Описание проблемы -->
-        <label for="description">{{ form.description.label }}</label>
-        {{ form.description(class="form-control", id="description") }}
+                                {{form.submit(class="btn btn-dark", style="height: 100%;width: 100%;" )}}
 
-        <br>
-
-        <!-- Кнопка отправки -->
-        {{ form.submit(class="btn btn-primary") }}
-    </form>
-</div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- End: Login Form Basic -->
 
 
 <a href="{{ url_for('inventory.available_inventory') }}">Назад к инвентарю</a>

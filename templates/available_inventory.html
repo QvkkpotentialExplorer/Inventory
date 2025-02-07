@@ -39,6 +39,15 @@
 
 <div class="container">
     <h2 class="text-center">Инвентарь</h2>
+    <script>
+    // Функция для скрытия всех флеш-сообщений через 10 секунд
+    setTimeout(function() {
+        var flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(function(message) {
+            message.style.display = 'none';
+        });
+    }, 10000);  // 10000 миллисекунд = 10 секунд
+</script>
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">
@@ -54,7 +63,7 @@
         {% for item in items %}
 
             <div class="card">
-                 <h4 class="card-title">Номер: {{item.id}}</h4>
+                 <h4 class="card-title">Номер: {{item[0].id}}</h4>
                 <p>Состояние: {{ item[0].status }}</p>
                 <p>Тип инвентаря: {{item[1]}}</p>
                 {% if current_user.role == 'admin' %}
@@ -84,7 +93,7 @@
 
                         <option value="">Не закреплён</option>
                         {% for user in users %}
-                        <option value="{{ item[1].id }}" {% if user.id == item.user_id %}selected{% endif %}>{{ user.username }}
+                       <option value="{{ user.id }}" {% if user.id == item.user_id %}selected{% endif %}>{{ user.username }}
                         </option>
                         {% endfor %}
                     </select>
@@ -98,9 +107,9 @@
                 {% endif %}
 
                 <!-- Кнопка для создания отчета по инвентарю -->
-                {% if current_user.role=='user%}
-                    <a href="{{ url_for('application.add_report', inventory_id=item[0].id) }}" class="btn btn-success">Заявка на ремонт</a>
-                    <a href="{{ url_for('application.replacement_inventory_request', inventory_replacement_id=item[0].id) }}" class="btn btn-success">Заявка на ремонт</a>
+                {% if current_user.role=='user'%}
+                    <a href="{{ url_for('inventory.create_repair_request', inventory_id=item[0].id) }}" class="btn btn-dark">Заявка на ремонт</a>
+                    <a href="{{ url_for('application.replacement_inventory_request', inventory_id=item[0].id) }}" class="btn btn-dark">Заявка на замену</a>
                 {% endif %}
 
 
@@ -112,15 +121,7 @@
 
 
 
-<script>
-    // Функция для скрытия всех флеш-сообщений через 10 секунд
-    setTimeout(function() {
-        var flashMessages = document.querySelectorAll('.flash-message');
-        flashMessages.forEach(function(message) {
-            message.style.display = 'none';
-        });
-    }, 10000);  // 10000 миллисекунд = 10 секунд
-</script>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>

@@ -7,7 +7,7 @@ class InventoryRequest(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id', onupdate="NO ACTION", ondelete="NO ACTION"), nullable=False)
-    inventory_type_id = Column(Integer, ForeignKey('inventory.id', onupdate="NO ACTION", ondelete="NO ACTION"), nullable=False)
+    inventory_type_id = Column(Integer, ForeignKey('inventory_type.id', onupdate="NO ACTION", ondelete="NO ACTION"), nullable=False)
     request_date = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'))
     status = Column(String, nullable=False)
     count = Column(Integer,nullable=False)
