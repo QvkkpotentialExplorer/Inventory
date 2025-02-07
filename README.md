@@ -1,4 +1,4 @@
-![Node.js](/docs/img/SeaBattle.png)
+![Node.js](/docs/img/InventoryCRM.png)
 ![Node.js](/docs/img/About.png)
 Эффективный учет и контроль спортивного инвентаря в школе играет
 важную роль в обеспечении высокого уровня проведения спортивных
