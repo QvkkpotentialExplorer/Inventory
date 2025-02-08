@@ -11,6 +11,7 @@ from data.inventory import Inventory
 from data.inventory_repair import InventoryRepair
 from data.inventory_request import InventoryRequest
 from data.inventory_type import InventoryType
+from data.procrument_plan import ProcurementPlan
 from form.inventory_add_form import AddInventoryForm, AddInventoryTypeForm, InventoryTypeRedactForm
 from form.inventory_request_form import InventoryRequestForm
 from form.redact_inventory_form import RedactInventoryForm
@@ -148,7 +149,7 @@ def delete_inventory_type(inventory_type_id):
     if request.method == 'POST':
         # Удаляем связанные заявки
         db_sess.query(InventoryRequest).filter(InventoryRequest.inventory_type_id == inventory_type.id).delete()
-
+        db_sess.query(ProcurementPlan).filter(ProcurementPlan.inventory_type_id == inventory_type.id).delete()
         # Удаляем все инвентари с этим типом
         for inventory_item in inventory_items:
             # Удаляем связанные ремонты, отчеты и замены

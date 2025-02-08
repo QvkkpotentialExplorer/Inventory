@@ -6,17 +6,22 @@
 Управление спортивным инвентарём через веб-интерфейс может значительно облегчить отслеживание наличия, состояния и
 распределения спортивного инвентаря, а также планирование его закупок.
 ![Node.js](/docs/img/Start.png)
-  #### Установите LTS версию [NodeJS](https://nodejs.org/)
+  #### Скачайте репозиторий
   ```
-  apt install nodejs
+  git clone https://github.com/QvkkpotentialExplorer/Sea_battle-.git
+
   ```
-  #### Установите пакеты
+  #### Перейдите в папку Inventory
   ```
-  npm i
+  cd Inventory
   ```
-  #### Запустите проект
+  #### Скачайте все требования
   ```
-  npm start
+  pip install -r requirements.txt
+  ```
+   #### Запустите проект
+  ```
+  python app.py
   ```
 ![Node.js](/docs/img/Block.png)
 ![Node.js](/docs/img/db_design.jpg)
