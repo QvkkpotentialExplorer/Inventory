@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение удаления</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css">
+</head>
+<body>
+{% include 'nav.html' %}
+<div class="container py-4 py-xl-5">
+    <div class="row mb-5">
+        <div class="col-md-8 col-xl-6 text-center mx-auto">
+            <h2 class="font-weight-bold">Подтвердите удаление типа инвентаря</h2>
+            <p>Вы действительно хотите удалить тип инвентаря "{{ inventory_type.name }}"? Все связанные инвентарные
+                записи будут удалены.</p>
+            <ul>
+                {% for item in inventory_items %}
+                    <li>{{ item.name }}</li>
+                {% endfor %}
+            </ul>
+            <form method="POST">
+                <h5>Вы уверены, что хотите удалить этот тип инвентаря?</h5>
+                <p>Все инвентари с этим типом и связанные с ними данные будут удалены.</p>
+                <button type="submit" class="btn btn-danger">Да, удалить</button>
+                <a href="{{ url_for('inventory.view_inventory_type') }}" class="btn btn-secondary">Отмена</a>
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
