@@ -103,24 +103,77 @@ def update_inventory_status(inventory_id):
     return redirect(url_for('inventory.available_inventory'))
 
 
-@inventory.route('/<int:inventory_id>/delete', methods=['POST'])
+@inventory.route('/inventory/<int:inventory_id>/delete', methods=['POST'])
 @login_required
 def delete_inventory(inventory_id):
     if current_user.role != 'admin':
         flash('У вас нет доступа для выполнения этого действия.', 'error')
         return redirect(url_for('inventory.available_inventory'))
 
-    inventory_item = db_sess.query(Inventory).get(inventory_id)
+    inventory_item = db_sess.query(Inventory).filter(Inventory.id == inventory_id).first()
     if not inventory_item:
         flash('Инвентарь не найден.', 'error')
         return redirect(url_for('inventory.available_inventory'))
 
+    # Удаляем связанные данные (ремонты, отчеты и замены)
+    db_sess.query(InventoryRepair).filter(InventoryRepair.inventory_id == inventory_item.id).delete()
+    db_sess.query(InventoryReport).filter(InventoryReport.inventory_id == inventory_item.id).delete()
+    db_sess.query(InventoryReplacement).filter(InventoryReplacement.inventory_id == inventory_item.id).delete()
+
+    # Удаляем инвентарь
     db_sess.delete(inventory_item)
     db_sess.commit()
-    flash(f'Инвентарь "{inventory_item.name}" успешно удален.', 'success')
 
+    flash(f'Инвентарь с номером {inventory_item.id} был успешно удалён.', 'success')
     return redirect(url_for('inventory.available_inventory'))
 
+
+
+@inventory.route('/type/<int:inventory_type_id>/delete', methods=['GET', 'POST'])
+@login_required
+def delete_inventory_type(inventory_type_id):
+    if current_user.role != 'admin':
+        flash('У вас нет доступа для выполнения этого действия.', 'error')
+        return redirect(url_for('inventory.view_inventory_type'))
+
+    inventory_type = db_sess.query(InventoryType).filter(InventoryType.id == inventory_type_id).first()
+    if not inventory_type:
+        flash('Тип инвентаря не найден.', 'error')
+        return redirect(url_for('inventory.view_inventory_type'))
+
+    # Проверяем, если есть связанные инвентари
+    inventory_items = db_sess.query(Inventory).filter(Inventory.inventory_type_id == inventory_type.id).all()
+
+    # Если форма отправлена методом POST
+    if request.method == 'POST':
+        # Удаляем связанные заявки
+        db_sess.query(InventoryRequest).filter(InventoryRequest.inventory_type_id == inventory_type.id).delete()
+
+        # Удаляем все инвентари с этим типом
+        for inventory_item in inventory_items:
+            # Удаляем связанные ремонты, отчеты и замены
+            db_sess.query(InventoryRepair).filter(InventoryRepair.inventory_id == inventory_item.id).delete()
+            db_sess.query(InventoryReport).filter(InventoryReport.inventory_id == inventory_item.id).delete()
+            db_sess.query(InventoryReplacement).filter(InventoryReplacement.inventory_id == inventory_item.id).delete()
+            db_sess.delete(inventory_item)
+
+        # Удаляем тип инвентаря
+        db_sess.delete(inventory_type)
+        db_sess.commit()
+
+        flash(f'Тип инвентаря "{inventory_type.name}" и все связанные данные удалены.', 'success')
+        return redirect(url_for('inventory.view_inventory_type'))
+
+    # Если нет связанных инвентарей, удаляем тип инвентаря сразу
+    if not inventory_items:
+        db_sess.delete(inventory_type)
+        db_sess.commit()
+        flash(f'Тип инвентаря "{inventory_type.name}" удален.', 'success')
+        return redirect(url_for('inventory.view_inventory_type'))
+
+    # Если есть связанные инвентари, показываем страницу с подтверждением
+    return render_template('confirm_delete_inventory_type.html', inventory_type=inventory_type,
+                           inventory_items=inventory_items)
 
 @inventory.route('/<int:inventory_id>/repair', methods=['GET', 'POST'])
 @login_required
@@ -236,6 +289,7 @@ def update_inventory_user(inventory_id):
         flash('Некорректный пользователь.', 'error')
     return redirect(url_for('inventory.available_inventory'))
 
+
 @inventory.route('/type', methods=['GET','POST'])
 @login_required
 def view_inventory_type():
@@ -249,7 +303,8 @@ def view_inventory_type():
     print(inventory_types)
     return render_template('view_inventory_type.html',inventory_types = inventory_types)
 
-@inventory.route('/type/<int:inventory_type_id>', methods=['GET','POST'])
+
+@inventory.route('/type/<int:inventory_type_id>', methods=['GET', 'POST'])
 @login_required
 def redact_inventory_type(inventory_type_id):
     inventory_type = db_sess.query(InventoryType).filter(InventoryType.id == inventory_type_id).first()
@@ -259,11 +314,11 @@ def redact_inventory_type(inventory_type_id):
     form = InventoryTypeRedactForm()
 
     if form.validate_on_submit():
-        inventory.name = form.name.data
+        inventory_type.name = form.name.data
         inventory_type.description = form.description.data
         db_sess.commit()
         return redirect(url_for('inventory.view_inventory_type'))
-    return render_template('edit_inventory_type.html', form = form, inventory_type = inventory_type)
+    return render_template('edit_inventory_type.html', form=form, inventory_type=inventory_type)
 
 
 @inventory.route('repair/approve/<int:inventory_repair_id>', methods = ['POST'])
