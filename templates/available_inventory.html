@@ -98,7 +98,9 @@
                     </select>
                     <button type="submit" class="btn btn-primary">Обновить пользователя</button>
                 </form>
+                {% if current_user.role == 'admin'%}
                 <a href = "{{url_for('application.add_report', inventory_id =item[0].id )}}">Составить отчет</a>
+                {% endif %}
                 {% endif %}
 
                 {% if item.status == 'broken'%}
