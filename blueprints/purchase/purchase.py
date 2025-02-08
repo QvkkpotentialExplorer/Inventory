@@ -34,7 +34,6 @@ def add_procurement_plan():
             supplier=form.supplier.data,
             planned_date=form.planned_date.data,
         )
-        print(plan)
         db_sess.add(plan)
         db_sess.commit()
         flash('План закупок успешно добавлен!', 'success')

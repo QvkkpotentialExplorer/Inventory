@@ -39,6 +39,6 @@ class InventoryTypeRedactForm(FlaskForm):
     def validate_max_length_name(form, field):
         if len(field.data) > 35:
             raise ValidationError("Количество символов в имени не должно быть больше 35")
-    name = StringField(validators=[validate_max_length_name])
+    name = StringField(validators=[validate_max_length_name,DataRequired()])
     description = StringField(validators=[DataRequired(),validate_max_length_description])
     submit = SubmitField('Изменить')

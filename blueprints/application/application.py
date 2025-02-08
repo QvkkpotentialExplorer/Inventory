@@ -153,7 +153,8 @@ def approve_request_inventory(request_id):
         count = len(inventories)
 
         if count<inventory_request.count:
-            print('Я здесь')
+
+
             flash('Недостаточно свободно инвентаря данного типа, для одобрения заявки', 'danger')
         else:
             for inventory in inventories[0:inventory_request.count]:
@@ -198,7 +199,6 @@ def view_requests():
 def replacement_inventory_request(inventory_id):
     if current_user.role == 'user':
         inventory = db_sess.query(Inventory).filter(Inventory.user_id == current_user.id, Inventory.status == 'in_use', Inventory.id == inventory_id).first()
-        print(inventory)
         if not inventory:
             return abort(401)
         inventory_replacement = db_sess.query(InventoryReplacement).filter(
@@ -216,7 +216,6 @@ def replacement_inventory_request(inventory_id):
 
 
         if form.validate_on_submit():
-            print(inventory.id)
             inventory_replacement = InventoryReplacement(user_id = current_user.id,status = 'pending',inventory_id = inventory.id,reason_description = form.reason_description.data)
             db_sess.add(inventory_replacement)
             db_sess.commit()

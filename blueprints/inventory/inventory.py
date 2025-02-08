@@ -30,9 +30,7 @@ def add_new_inventory():
         form = AddInventoryForm()
         form.inventory_type.choices= form.get_inventory_type()
         if form.validate_on_submit():
-            print(form.inventory_type.data)
             inventory_type = db_sess.query(InventoryType).filter(InventoryType.name==form.inventory_type.data).first()
-            print(inventory_type.id)
             for i in range(form.count.data):
                 new_inventory = Inventory(inventory_type_id = inventory_type.id)
                 new_inventory.name = f'{inventory_type.name}{new_inventory.id}'
@@ -71,7 +69,6 @@ def available_inventory():
 
         )
         users = db_sess.query(User).all()
-        print(items)
     else:
         items = db_sess.query(Inventory,InventoryType.name).join(InventoryType, Inventory.inventory_type_id == InventoryType.id).filter(Inventory.user_id == current_user.id).all()
         users =[]
@@ -210,8 +207,6 @@ def create_repair_request(inventory_id):
         db_sess.commit()
         flash('Заявка на ремонт инвентаря успешно создана!', 'success')
         return redirect(url_for('inventory.available_inventory'))
-    else:
-        print("Ошибки формы:", form.errors)  # Показывает, если валидация не проходит
 
     return render_template('create_repair_request.html', form=form)
 
@@ -269,14 +264,12 @@ def update_inventory_user(inventory_id):
     if current_user.role != 'admin':
         flash('У вас нет доступа для выполнения этого действия.', 'error')
         return redirect(url_for('inventory.available_inventory'))
-    print('')
     inventory_item = db_sess.query(Inventory).get(inventory_id)
     if not inventory_item:
         flash('Инвентарь не найден.', 'error')
         return redirect(url_for('inventory.available_inventory'))
 
     new_user_id = request.form.get('user_id')
-    print(new_user_id)
     if new_user_id:
         user = db_sess.query(User).get(new_user_id)
         if user:
@@ -296,12 +289,9 @@ def update_inventory_user(inventory_id):
 def view_inventory_type():
     inventory_type = db_sess.query(InventoryType).all()
     inventory_types = []
-    print(inventory_type)
     for inventory in inventory_type:
         inventory_types.append(
             (inventory, len(list(db_sess.query(Inventory).filter(Inventory.inventory_type_id == inventory.id)))))
-        print(inventory.name)
-    print(inventory_types)
     return render_template('view_inventory_type.html',inventory_types = inventory_types)
 
 
