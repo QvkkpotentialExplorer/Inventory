@@ -8,7 +8,7 @@
 ![Node.js](/docs/img/Start.png)
   #### Скачайте репозиторий
   ```
-  git clone https://github.com/QvkkpotentialExplorer/Sea_battle-.git
+  git clone https://github.com/QvkkpotentialExplorer/Inventory
 
   ```
   #### Перейдите в папку Inventory
