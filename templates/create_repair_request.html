@@ -9,6 +9,16 @@
 </head>
 <body>
 {% include 'nav.html' %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<ul class="flashes">
+    {% for category, message in messages %}
+    <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
 <h2>Заявка на ремонт инвентаря</h2>
 
 
@@ -49,15 +59,6 @@
 
 
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<ul class="flashes">
-    {% for category, message in messages %}
-    <li class="alert alert-{{ category }} flash-message">{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
 
 <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд

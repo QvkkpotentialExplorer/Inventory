@@ -49,6 +49,15 @@
                 </div>
             </li>
 
+            <li class="nav-item dropdown">
+                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button"
+                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">   Отчеты </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ url_for('application.view_reports') }}">Список отчетов</a>
+
+
+                </div>
+            </li>
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('auth_page.logout') }}">Выход</a></li>

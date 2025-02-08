@@ -7,34 +7,8 @@
 
 </head>
 <body>
-{% include 'nav.html' %}
-{% block content %}
-    <h1>Добавление отчета</h1>
-    <form action="" method="post" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.condition_before.label }}<br>
-            {{ form.condition_before(class="form-control") }}<br>
-            {% for error in form.condition_before.errors %}
-                <p class="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.condition_after.label }}<br>
-            {{ form.condition_after(class="form-control") }}<br>
-            {% for error in form.condition_after.errors %}
-                <p content="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-        </p>
-        <p> {{ form.photo }}</p>
-        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-        {{ message }}
 
-    </form>
+{% include 'nav.html' %}
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">
@@ -45,6 +19,51 @@
     {% endif %}
 {% endwith %}
 
+
+
+
+
+
+  <!-- Start: Login Form Basic -->
+    <section class="position-relative py-4 py-xl-5">
+        <div class="container position-relative">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="font-weight-bold">Создание отчета</h2>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body text-center d-flex flex-column align-items-center">
+                            <h3>Создание</h3>
+                            <form method="post">
+                                {{ form.hidden_tag() }}
+                                 {% for error in form.errors %}
+                                {% if error%}
+                                <div class="alert alert-danger" role="alert">
+                                    <!--                                Обращаемся к ошибкам form(RegisterForm), достаем по ключу ошибки(название колонки) первый элемент, то есть наше сообщение-->
+                                    {{form.errors[error][0]}}
+                                </div>
+                                {%endif%}
+                                {% endfor %}
+                                {{form.condition_before(class = "form-control mb-3", placeholder = "Состояние до")}}
+                                {{form.condition_after(class = "form-control mb-3", placeholder = "Состояние после")}}
+                                {{form.description(class = "form-control mb-3", placeholder = "Текст отчёта")}}
+                                {{form.user(class = "form-control mb-3", placeholder = "Пользователь")}}
+                                {{ form.photo(class = "form-control mb-3") }}
+                                {{form.submit(class="btn btn-dark", style="height: 100%;width: 100%;" )}}
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- End: Login Form Basic -->
+
+
+
 <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд
     setTimeout(function() {
@@ -54,7 +73,7 @@
         });
     }, 10000);  // 10000 миллисекунд = 10 секунд
 </script>
-{% endblock %}
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
 

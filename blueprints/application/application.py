@@ -75,9 +75,9 @@ def update_request_status(request_id):
 @login_required
 def view_reports():
     if current_user.role == 'admin':
-        reports = db_sess.query(InventoryReport).all()
+        reports = db_sess.query(InventoryReport,User.username).outerjoin(User,User.id == InventoryReport.user_id).all()
     else:
-        flash('У вас нет доступа к этому действию', 'error')
+        flash('У вас нет доступа к этому действию', 'danger')
         return redirect('/')
 
     return render_template('view_reports.html', reports=reports)
@@ -91,14 +91,23 @@ def add_report(inventory_id):
         flash('Не указан инвентарь для отчета.', 'error')
         return redirect(url_for('application.view_reports'))
     form = InventoryReportForm()
+    form.user.choices = [user.username for user in db_sess.query(User).all()]
     form.inventory_id.data = inventory_id  # Предзаполняем ID инвентаря
+    inventory = db_sess.query(Inventory).filter(Inventory.id == inventory_id)
+    if not inventory:
+        flash('Некорректный идентификатор инвентаря', 'error')
+        return redirect(url_for('application.view_reports'))
+
     if form.validate_on_submit():
+        user = db_sess.query(User).filter(User.username == form.user.data).first()
+
         report = InventoryReport(
-            user_id=current_user.id,
+            user_id=user.id,
             inventory_id=inventory_id,
             condition_before=form.condition_before.data,
             condition_after=form.condition_after.data,
-            photo=form.photo.data
+            photo=form.photo.data,
+            description = form.description.data
         )
         db_sess.add(report)
         db_sess.commit()
@@ -108,19 +117,22 @@ def add_report(inventory_id):
 @application.route('/requests/add_request', methods=['GET', 'POST'])
 @login_required
 def request_inventory():
-    form = InventoryRequestForm()
-    if form.validate_on_submit():
-        request_item = InventoryRequest(
-            user_id=current_user.id,
-            inventory_type_id=form.inventory_type_id.data,
-            count=form.count.data,
-            status='pending'
-        )
-        db_sess.add(request_item)
-        db_sess.commit()
-        flash('Заявка успешно создана!', 'success')
-        return redirect(url_for('application.view_requests'))
-    return render_template('inventory_request.html', form=form)
+    if current_user.role == 'user':
+        form = InventoryRequestForm()
+        if form.validate_on_submit():
+            request_item = InventoryRequest(
+                user_id=current_user.id,
+                inventory_type_id=form.inventory_type_id.data,
+                count=form.count.data,
+                status='pending'
+            )
+            db_sess.add(request_item)
+            db_sess.commit()
+            flash('Заявка успешно создана!', 'success')
+            return redirect(url_for('application.view_requests'))
+        return render_template('inventory_request.html', form=form)
+    else:
+        return abort(401)
 @application.route('/reject/inventory/<int:request_id>', methods=['GET', 'POST'])
 @login_required
 def reject_request_inventory(request_id):

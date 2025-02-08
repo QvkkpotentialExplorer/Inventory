@@ -10,26 +10,6 @@
 {% include 'nav.html' %}
 
 <h2>Отчёты</h2>
-
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Дата</th>
-            <th>Описание</th>
-            <th>Создано пользователем</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for report in reports %}
-        <tr>
-            <td>{{ report.id }}</td>
-            <td>{{ report.date }}</td>
-            <td>{{ report.description }}</td>
-            <td>{{ report.user_id }}</td>
-        </tr>
-        {% endfor %}
-
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">
@@ -39,6 +19,25 @@
         </ul>
     {% endif %}
 {% endwith %}
+  <div class="container">
+         <div class="col pr-5 pl-5 mr-5">
+            {% for report in reports %}
+            <div class="card mb-3 ml-5 mr-5 mt-4 pt-0 pr-5 pl-5 pb-0">
+                <div class="card-body pl-0 pr-0">
+                    <h4 class="card-title mb-3">Номер отчета: {{ report[0].id }}</h4>
+                    <h6 class="text-muted card-subtitle mb-3">Инвентарь: {{report[0].inventory_id}}</h6>
+                    <h6 class="text-muted card-subtitle mb-3">Дата создания:  {{ report[0].usage_date }} </h6>
+                    <h6 class="text-muted card-subtitle mb-3">Пользователь:  {{ report[1] }} </h6>
+                    <h6 class="text-muted card-subtitle mb-3">Описание состояния до:   {{ report[0].condition_before }} </h6>
+                    <h6 class="text-muted card-subtitle mb-3">Описание состояния после:   {{ report[0].condition_after }}</h6>
+                    <h6 class="text-muted card-subtitle mb-3">Текст отчета:   {{ report[0].description }}</h6>
+
+                </div>
+            </div>
+            {% endfor %}
+         </div>
+  </div>
+
 
 <script>
     // Функция для скрытия всех флеш-сообщений через 10 секунд

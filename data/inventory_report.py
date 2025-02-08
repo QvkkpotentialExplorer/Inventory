@@ -11,6 +11,7 @@ class InventoryReport(Base):
     usage_date = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'))
     condition_before = Column(String, nullable=False)
     condition_after = Column(String, nullable=False)
+    description = Column(String,nullable=False)
     photo = Column(String,nullable=False)
     __table_args__ = (
         CheckConstraint("condition_before IN ('new', 'used', 'broken')", name="check_condition_before"),

@@ -98,6 +98,7 @@
                     </select>
                     <button type="submit" class="btn btn-primary">Обновить пользователя</button>
                 </form>
+                <a href = "{{url_for('application.add_report', inventory_id =item[0].id )}}">Составить отчет</a>
                 {% endif %}
 
                 {% if item.status == 'broken'%}
