@@ -20,6 +20,7 @@ def add_procurement_plan():
         return redirect(url_for('index'))
 
     form = ProcurementPlanForm()
+    form.inventory_type.choices = form.get_inventory_type()
     if form.validate_on_submit():
         inventory_type = db_sess.query(InventoryType).filter(InventoryType.name == form.inventory_type.data).first()
         if not inventory_type:
@@ -33,6 +34,7 @@ def add_procurement_plan():
             supplier=form.supplier.data,
             planned_date=form.planned_date.data,
         )
+        print(plan)
         db_sess.add(plan)
         db_sess.commit()
         flash('План закупок успешно добавлен!', 'success')
