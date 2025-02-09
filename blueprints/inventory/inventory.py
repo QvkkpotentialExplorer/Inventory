@@ -187,10 +187,10 @@ def create_repair_request(inventory_id):
     inventory_repair = db_sess.query(InventoryRepair).filter(InventoryRepair.status == 'pending', InventoryRepair.inventory_id == int(inventory_id)).first()
 
     if inventory_repair:
-        flash('Заявка на ремонт уже подана')
+        flash('Заявка на ремонт уже подана','danger')
         return redirect(url_for('inventory.repairs'))
     if inventory_replacement:
-        flash('Была подана заявка на замену')
+        flash('Нельзя подать заявку на ремонт, так как до этого была подана заявка на замену','danger')
         return redirect(url_for('application.view_replacement_requests'))
 
     form = InventoryRepairForm()

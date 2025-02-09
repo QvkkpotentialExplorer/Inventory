@@ -140,6 +140,7 @@ def reject_request_inventory(request_id):
         inventory_request = db_sess.query(InventoryRequest).filter(InventoryRequest.id == request_id).first()
         inventory_request.status ='rejected'
         db_sess.commit()
+        flash('Заявка отклонена', 'danger')
     else:
         return abort(401)
     return redirect(url_for('application.view_requests'))

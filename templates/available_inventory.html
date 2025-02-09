@@ -68,8 +68,8 @@
                 <p>Тип инвентаря: {{item[1]}}</p>
                 {% if current_user.role == 'admin' %}
 
-                <p>Закреплён за: {{ item[2] if item.user_id else "Не закреплён" }}</p>
 
+                <p>Закреплён за: {{ item[2] if item[0].user_id else "Не закреплён" }}</p>
                 <!-- Форма для изменения статуса инвентаря -->
                 <form method="POST" action="{{ url_for('inventory.update_inventory_status', inventory_id=item[0].id) }}">
                     <select name="status" required>
@@ -87,7 +87,7 @@
                 </form>
 
                 <!-- Если статус 'broken', показываем кнопку для подачи заявки на ремонт -->
-                 <p>Закреплён за: {{ item[2] if item[0].user_id else "Не закреплён" }}</p>
+
                 <form method="POST" action="{{ url_for('inventory.update_inventory_user', inventory_id=item[0].id) }}">
                     <select name="user_id" required>
                         <option value="">Не закреплён</option>

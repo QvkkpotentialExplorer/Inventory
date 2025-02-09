@@ -47,8 +47,12 @@
                                 </div>
                                 {%endif%}
                                 {% endfor %}
-                                {{form.condition_before(class = "form-control mb-3", placeholder = "Состояние до")}}
-                                {{form.condition_after(class = "form-control mb-3", placeholder = "Состояние после")}}
+                                <label class="d-block text-start" for="{{ form.condition_before.id_for_label }}">Состояние до</label>
+                                {{ form.condition_before(class="form-control mb-3", placeholder="Состояние до") }}
+
+                                <label class="d-block text-start" for="{{ form.condition_after.id_for_label }}">Состояние после</label>
+                                {{ form.condition_after(class="form-control mb-3", placeholder="Состояние после") }}
+
                                 {{form.description(class = "form-control mb-3", placeholder = "Текст отчёта")}}
                                 {{form.user(class = "form-control mb-3", placeholder = "Пользователь")}}
                                 {{ form.photo(class = "form-control mb-3") }}

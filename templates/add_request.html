@@ -8,7 +8,7 @@
 </head>
 <body>
 {% include 'nav.html' %}
-{{ form.hidden_tagf() }}
+{{ form.hidden_tag() }}
         {% for error in form.errors %}
         {% if error%}
         <div class="alert alert-danger" role="alert">
