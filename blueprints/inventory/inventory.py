@@ -95,7 +95,7 @@ def update_inventory_status(inventory_id):
             inventory_item.user_id = None
             inventory_item.username = None
         db_sess.commit()
-        flash(f'Статус инвентаря "{inventory_item.name}" обновлён.', 'success')
+        flash(f'Статус инвентаря "{inventory_item.id}" обновлён.', 'success')
     else:
         flash('Некорректный статус.', 'error')
     return redirect(url_for('inventory.available_inventory'))
@@ -227,7 +227,7 @@ def repairs():
             .join(InventoryType,
                   InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
             .filter(InventoryRepair.status == "pending")  # Filter requests for the current user
-            .all()
+                .all()[::-1]
         )
     else:
         repair_requests = (
@@ -239,7 +239,7 @@ def repairs():
                   InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
             .filter(InventoryRepair.status == "pending")  # Filter requests for the current user
             .all()
-        )
+        )[::-1]
 
     if current_user.role == 'admin':
         return render_template('repairs.html', requests=repair_requests)
@@ -253,7 +253,7 @@ def repairs():
               InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
         .filter(
                 InventoryRepair.user_id == current_user.id)  # Filter requests for the current user
-        .all()
+        .all()[::-1]
     )
     return render_template('repairs.html', requests = user_repairs)
 
@@ -276,7 +276,7 @@ def update_inventory_user(inventory_id):
             inventory_item.user_id = new_user_id
             inventory_item.username = user.username
             db_sess.commit()
-            flash(f'Пользователь инвентаря "{inventory_item.name}" обновлён.', 'success')
+            flash(f'Пользователь инвентаря "{inventory_item.id}" обновлён.', 'success')
         else:
             flash('Пользователь не найден.', 'error')
     else:

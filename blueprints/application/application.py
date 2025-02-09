@@ -178,7 +178,7 @@ def view_requests():
             .join(InventoryType,
                   InventoryRequest.inventory_type_id == InventoryType.id)  # Join InventoryRequest with InventoryType
             .filter(InventoryRequest.status == "pending")  # Filter requests for the current user
-            .all()
+            .all()[::-1]
         )
     else:
         requests = (
@@ -187,7 +187,7 @@ def view_requests():
             .join(InventoryType,
                   InventoryRequest.inventory_type_id == InventoryType.id)  # Join InventoryRequest with InventoryType
             .filter(InventoryRequest.user_id == current_user.id)  # Filter requests for the current user
-            .all()
+            .all()[::-1]
         )
 
         print(requests)
@@ -241,7 +241,7 @@ def view_replacement_requests():
                   Inventory.id == InventoryReplacement.inventory_id)
             .join(InventoryType,InventoryType.id == Inventory.inventory_type_id)# Join InventoryRequest with InventoryType
             .filter(InventoryReplacement.status == "pending")  # Filter requests for the current user
-            .all()
+            .all()[::-1]
         )
         return render_template('view_replacement_requests.html', requests = requests,  current_user = current_user)
     else:
@@ -253,7 +253,7 @@ def view_replacement_requests():
             .join(InventoryType,
                   InventoryType.id == Inventory.inventory_type_id)  # Join InventoryRequest with InventoryType
             .filter(InventoryReplacement.status == "pending", InventoryReplacement.user_id == current_user.id)  # Filter requests for the current user
-            .all()
+            .all()[::-1]
         )
         return render_template('view_replacement_requests.html', requests = requests, current_user = current_user)
 @application.route('replacement/approve/<int:inventory_replacement_id>',methods = ['GET','POST'])

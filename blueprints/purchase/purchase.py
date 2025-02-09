@@ -46,7 +46,7 @@ def view_procurement_plans():
     if current_user.role != 'admin':
         flash('У вас нет доступа для выполнения этого действия.', 'error')
         return redirect(url_for('index'))
-    plans = db_sess.query(ProcurementPlan).all()
+    plans = db_sess.query(ProcurementPlan).all()[::-1]
     return render_template('view_procurement_plans.html', plans=plans)
 
 

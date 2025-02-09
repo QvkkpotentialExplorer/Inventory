@@ -16,7 +16,7 @@
                 записи будут удалены.</p>
             <ul>
                 {% for item in inventory_items %}
-                    <li>{{ item.name }}</li>
+                    <li>Инвентарь с id:{ { item.id }}</li>
                 {% endfor %}
             </ul>
             <form method="POST">
