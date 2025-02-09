@@ -31,7 +31,7 @@
                 <h6 class="text-muted card-subtitle mb-3">Инвентарь: {{plan.inventory_type_id}}</h6>
                 <h6 class="text-muted card-subtitle mb-3">Количество: {{plan.quantity}}</h6>
                 <h6 class="text-muted card-subtitle mb-3">Дата: {{plan.planned_date}}</h6>
-                <h6 class="text-muted card-subtitle mb-3">Итоговая цена: {{plan.price}}</h6>
+                <h6 class="text-muted card-subtitle mb-3">Итоговая цена: {{plan.price*price.quantity}}</h6>
             </div>
         </div>
         {%endfor%}

@@ -12,9 +12,10 @@ class ProcurementPlanForm(FlaskForm):
     def validate_count(form,field):
         if field.data>10000:
             raise ValidationError("Количество предметов для закупки не может превышать 10000 шт ")
+
     inventory_type = SelectField('Тип инвентаря', validators=[DataRequired()], choices=get_inventory_type())
-    quantity = IntegerField('Количество', validators=[DataRequired(), NumberRange(min=1)])
-    price = DecimalField('Цена за единицу', validators=[DataRequired(), NumberRange(min=0)])
+    quantity = IntegerField('Количество', validators=[DataRequired(), NumberRange(min=1,max = 10000)])
+    price = DecimalField('Цена за единицу', validators=[DataRequired(), NumberRange(min=1,max =200000)])
     supplier = StringField('Поставщик', validators=[DataRequired()])
     planned_date = DateField('Дата планирования', format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Создать план закупок')
