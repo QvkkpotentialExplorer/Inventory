@@ -6,7 +6,7 @@
 Управление спортивным инвентарём через веб-интерфейс может значительно облегчить отслеживание наличия, состояния и
 распределения спортивного инвентаря, а также планирование его закупок.
 ![Node.js](/docs/img/Start.png)
-  #### Скачайте репозиторий
+  #### Склонируйте репозиторий
   ```
   git clone https://github.com/QvkkpotentialExplorer/Inventory
 
@@ -15,13 +15,42 @@
   ```
   cd Inventory
   ```
+  #### Создайте и активируйте виртуальное окружение 
+  Windows:
+  ```
+  python -m venv venv
+  ```
+  ```
+  cd venv/scripts && activate
+  ```
+  Linux:
+  ```
+  sudo apt install -y python3-venv && python3 -m venv venv
+  ```
+  ```
+  source venv/scripts/activate
+  ```
+  #### Выйдете из venv/scripts
+  ```
+  cd ../../
+  ```
   #### Скачайте все требования
+  Windows:
   ```
   pip install -r requirements.txt
   ```
+  Linux:
+  ```
+  pip3 install -r requirements.txt
+  ```
    #### Запустите проект
+   Windows
   ```
   python app.py
+  ```
+  Linux
+  ```
+python3 app.py
   ```
 ![Node.js](/docs/img/Block.png)
 ![Node.js](/docs/img/db_design.jpg)
