@@ -9,7 +9,11 @@
 <body>
 {% include 'nav.html' %}
 
-<h2>Отчёты</h2>
+<div class="row mb-5">
+        <div class="col-md-8 col-xl-6 text-center mx-auto">
+            <h2 class="font-weight-bold">Отчеты</h2>
+        </div>
+    </div>
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <ul class="flashes">

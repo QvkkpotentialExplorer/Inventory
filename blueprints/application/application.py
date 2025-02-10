@@ -36,7 +36,7 @@ def update_request_status(request_id):
     if new_status in ['pending', 'approved', 'rejected']:
         request_item.status = new_status
 
-        if new_status == 'approved':
+        if new_status == 'approved' :
             inventory_type_item = db_sess.query(InventoryType).get(request_item.inventory_type_id)
             inventory_items = db_sess.query(Inventory).filter(
                 Inventory.inventory_type_id == request_item.inventory_type_id,
@@ -168,7 +168,7 @@ def approve_request_inventory(request_id):
     else:
         return abort(401)
     return redirect(url_for('application.view_requests'))
-@application.route('/requests', methods=['GET'])
+@application.route('/requests', methods=['GET','POST'])
 @login_required
 def view_requests():
     if current_user.role == 'admin':
@@ -198,8 +198,9 @@ def view_requests():
 @application.route('/replacement/<int:inventory_id>', methods = ['GET','POST'])
 @login_required
 def replacement_inventory_request(inventory_id):
+    print(current_user.role)
     if current_user.role == 'user':
-        inventory = db_sess.query(Inventory).filter(Inventory.user_id == current_user.id, Inventory.status == 'in_use', Inventory.id == inventory_id).first()
+        inventory = db_sess.query(Inventory).filter(Inventory.user_id == current_user.id, Inventory.id == inventory_id).first()
         if not inventory:
             return abort(401)
         inventory_replacement = db_sess.query(InventoryReplacement).filter(
@@ -225,6 +226,7 @@ def replacement_inventory_request(inventory_id):
 
         return render_template('inventory_replacement.html',form= form)
     else:
+        print('Я здесь')
         return abort(401)
 
 
